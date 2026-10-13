@@ -1,7 +1,6 @@
 -- ============================================================================
--- ĐỒ ÁN MÔN PHÁT TRIỂN MÃ NGUỒN MỞ (PHP & MYSQL - LARAVEL COMPATIBLE)
 -- HỆ THỐNG ĐẶT VÉ FIFA WORLD CUP 2030 (QUY MÔ 100,000 CHỖ NGOÌ/SÂN)
--- Đã đồng bộ 100% với Codebase Nhom2_QuanLy-DatVeWorldCup
+-- Cơ sở dữ liệu đồng bộ 100% với Codebase Laravel (Nhom2_QuanLy-DatVeWorldCup)
 -- ============================================================================
 
 DROP DATABASE IF EXISTS worldcup_2030;
@@ -65,7 +64,18 @@ CREATE TABLE stadiums (
 ) ENGINE=InnoDB;
 
 -- ==========================================
--- 5. BẢNG ĐỘI TUYỂN (Tương thích Team.php)
+-- 5. BẢNG LOẠI VÉ (TICKET_TYPES)
+-- ==========================================
+CREATE TABLE ticket_types (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    type_name VARCHAR(50) NOT NULL UNIQUE,
+    description VARCHAR(255) NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+
+-- ==========================================
+-- 6. BẢNG ĐỘI TUYỂN (Tương thích Team.php)
 -- ==========================================
 CREATE TABLE teams (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -79,23 +89,25 @@ CREATE TABLE teams (
 ) ENGINE=InnoDB;
 
 -- ==========================================
--- 6. BẢNG KHU VỰC GHẾ (Tương thích SeatZone.php)
+-- 7. BẢNG KHU VỰC GHẾ (Tương thích SeatZone.php)
 -- ==========================================
 CREATE TABLE seat_zones (
     id INT AUTO_INCREMENT PRIMARY KEY,
     stadium_id INT NOT NULL,
-    zone_name VARCHAR(50) NOT NULL, -- e.g., 'Khán đài VIP', 'Khán đài Phổ Thông'
+    ticket_type_id INT NULL,
+    zone_name VARCHAR(50) NOT NULL,
     name VARCHAR(50) NULL,
     type ENUM('VIP', 'STANDARD') NOT NULL DEFAULT 'STANDARD',
     total_seats INT NOT NULL DEFAULT 0,
     base_price DECIMAL(10,2) NOT NULL DEFAULT 0.00,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (stadium_id) REFERENCES stadiums(id) ON DELETE CASCADE
+    FOREIGN KEY (stadium_id) REFERENCES stadiums(id) ON DELETE CASCADE,
+    FOREIGN KEY (ticket_type_id) REFERENCES ticket_types(id) ON DELETE SET NULL
 ) ENGINE=InnoDB;
 
 -- ==========================================
--- 7. BẢNG TRẬN ĐẤU (Tương thích MatchGame.php)
+-- 8. BẢNG TRẬN ĐẤU (Tương thích MatchGame.php)
 -- ==========================================
 CREATE TABLE matches (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -118,7 +130,7 @@ CREATE TABLE matches (
 ) ENGINE=InnoDB;
 
 -- ==========================================
--- 8. BẢNG GHẾ THEO TRẬN ĐẤU (Tương thích MatchSeat.php)
+-- 9. BẢNG GHẾ THEO TRẬN ĐẤU (Tương thích MatchSeat.php)
 -- ==========================================
 CREATE TABLE match_seats (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -137,7 +149,7 @@ CREATE TABLE match_seats (
 CREATE INDEX idx_match_seat_status ON match_seats(match_id, status);
 
 -- ==========================================
--- 9. BẢNG ĐƠN HÀNG (Tương thích Order.php)
+-- 10. BẢNG ĐƠN HÀNG (Tương thích Order.php)
 -- ==========================================
 CREATE TABLE orders (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -154,7 +166,7 @@ CREATE TABLE orders (
 ) ENGINE=InnoDB;
 
 -- ==========================================
--- 10. BẢNG VÉ ĐÃ ĐẶT (Tương thích Ticket.php)
+-- 11. BẢNG VÉ ĐÃ ĐẶT (Tương thích Ticket.php)
 -- ==========================================
 CREATE TABLE tickets (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -173,7 +185,7 @@ CREATE TABLE tickets (
 ) ENGINE=InnoDB;
 
 -- ==========================================
--- 11. BẢNG THANH TOÁN (Tương thích Payment.php & PaymentService)
+-- 12. BẢNG THANH TOÁN (Tương thích Payment.php & PaymentService)
 -- ==========================================
 CREATE TABLE payments (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -193,26 +205,31 @@ SET FOREIGN_KEY_CHECKS = 1;
 -- NẠP DỮ LIỆU MẪU (SEED DATA WORLD CUP 2030)
 -- ============================================================================
 
--- 1. NGƯỜI DÙNG MẪU (Mật khẩu: 123456)
+-- 1. LOẠI VÉ
+INSERT INTO ticket_types (id, type_name, description) VALUES
+(1, 'VIP', 'Vé khán đài VIP, lối đi ưu tiên, kèm đồ ăn nhẹ & đồ uống cao cấp'),
+(2, 'STANDARD', 'Vé phổ thông khán đài A/B/C/D');
+
+-- 2. NGƯỜI DÙNG MẪU (Mật khẩu: 123456)
 INSERT INTO users (id, name, full_name, email, password, phone, role) VALUES
 (1, 'System Admin', 'System Admin', 'admin@worldcup2030.com', '$2y$10$e0MYzXyjpJS7Pd0RVvHwHe118a./2i9F14G/M7z26p20R/fP.Wd42', '0901234567', 'ADMIN'),
 (2, 'Nguyễn Văn A', 'Nguyễn Văn A', 'user@gmail.com', '$2y$10$e0MYzXyjpJS7Pd0RVvHwHe118a./2i9F14G/M7z26p20R/fP.Wd42', '0987654321', 'USER'),
 (3, 'Trần Thị B', 'Trần Thị B', 'user_b@gmail.com', '$2y$10$e0MYzXyjpJS7Pd0RVvHwHe118a./2i9F14G/M7z26p20R/fP.Wd42', '0912345678', 'USER');
 
--- 2. QUỐC GIA ĐĂNG CAI
+-- 3. QUỐC GIA ĐĂNG CAI
 INSERT INTO host_countries (id, country_name, country_code) VALUES
 (1, 'Tây Ban Nha', 'ESP'),
 (2, 'Bồ Đào Nha', 'POR'),
 (3, 'Ma-rốc', 'MAR');
 
--- 3. THÀNH PHỐ TỔ CHỨC
+-- 4. THÀNH PHỐ TỔ CHỨC
 INSERT INTO cities (id, country_id, city_name) VALUES
 (1, 1, 'Madrid'), (2, 1, 'Barcelona'), (3, 1, 'Seville'), (4, 1, 'Bilbao'),
 (5, 1, 'San Sebastian'), (6, 1, 'A Coruna'), (7, 1, 'Zaragoza'), (8, 1, 'Malaga'), (9, 1, 'Las Palmas'),
 (10, 2, 'Lisbon'), (11, 2, 'Porto'), (12, 2, 'Faro'),
 (13, 3, 'Casablanca'), (14, 3, 'Rabat'), (15, 3, 'Tangier'), (16, 3, 'Marrakech');
 
--- 4. SÂN VẬN ĐỘNG QUY MÔ 100,000 CHỖ
+-- 5. SÂN VẬN ĐỘNG QUY MÔ 100,000 CHỖ
 INSERT INTO stadiums (id, city_id, name, stadium_name, location, capacity) VALUES
 (1, 1, 'Santiago Bernabeu', 'Santiago Bernabeu', 'Madrid, Spain', 100000),
 (2, 2, 'Spotify Camp Nou', 'Spotify Camp Nou', 'Barcelona, Spain', 100000),
@@ -231,14 +248,14 @@ INSERT INTO stadiums (id, city_id, name, stadium_name, location, capacity) VALUE
 (15, 15, 'Ibn Batouta Stadium', 'Ibn Batouta Stadium', 'Tangier, Morocco', 100000),
 (16, 16, 'Grand Stade de Marrakech', 'Grand Stade de Marrakech', 'Marrakech, Morocco', 100000);
 
--- 5. KHU VỰC GHẾ MẪU (10,000 VIP + 90,000 PHỔ THÔNG CHO CÁC SÂN)
-INSERT INTO seat_zones (stadium_id, zone_name, name, type, total_seats, base_price)
-SELECT id, 'Khán đài VIP', 'Khán đài VIP', 'VIP', 10000, 500.00 FROM stadiums;
+-- 6. KHU VỰC GHẾ (LIÊN KẾT TRỰC TIẾP TICKET_TYPE_ID)
+INSERT INTO seat_zones (stadium_id, ticket_type_id, zone_name, name, type, total_seats, base_price)
+SELECT id, 1, 'Khán đài VIP', 'Khán đài VIP', 'VIP', 10000, 500.00 FROM stadiums;
 
-INSERT INTO seat_zones (stadium_id, zone_name, name, type, total_seats, base_price)
-SELECT id, 'Khán đài Phổ Thông', 'Khán đài Phổ Thông', 'STANDARD', 90000, 150.00 FROM stadiums;
+INSERT INTO seat_zones (stadium_id, ticket_type_id, zone_name, name, type, total_seats, base_price)
+SELECT id, 2, 'Khán đài Phổ Thông', 'Khán đài Phổ Thông', 'STANDARD', 90000, 150.00 FROM stadiums;
 
--- 6. 48 ĐỘI TUYỂN 12 BẢNG (A - L)
+-- 7. 48 ĐỘI TUYỂN 12 BẢNG (A - L)
 INSERT INTO teams (id, name, team_name, code, group_name) VALUES
 (1, 'Tây Ban Nha', 'Tây Ban Nha', 'ESP', 'A'), (2, 'Bồ Đào Nha', 'Bồ Đào Nha', 'POR', 'A'), (3, 'Ma-rốc', 'Ma-rốc', 'MAR', 'A'), (4, 'Việt Nam', 'Việt Nam', 'VIE', 'A'),
 (5, 'Nhật Bản', 'Nhật Bản', 'JPN', 'B'), (6, 'Hàn Quốc', 'Hàn Quốc', 'KOR', 'B'), (7, 'Úc', 'Úc', 'AUS', 'B'), (8, 'Ả Rập Xê Út', 'Ả Rập Xê Út', 'KSA', 'B'),
@@ -253,7 +270,7 @@ INSERT INTO teams (id, name, team_name, code, group_name) VALUES
 (41, 'Cameroon', 'Cameroon', 'CMR', 'K'), (42, 'Mali', 'Mali', 'MLI', 'K'), (43, 'Bờ Biển Ngà', 'Bờ Biển Ngà', 'CIV', 'K'), (44, 'Tunisia', 'Tunisia', 'TUN', 'K'),
 (45, 'Algeria', 'Algeria', 'ALG', 'L'), (46, 'Thổ Nhĩ Kỳ', 'Thổ Nhĩ Kỳ', 'TUR', 'L'), (47, 'Ukraina', 'Ukraina', 'UKR', 'L'), (48, 'Serbia', 'Serbia', 'SRB', 'L');
 
--- 7. CÁC TRẬN ĐẤU MẪU
+-- 8. TRẬN ĐẤU MẪU
 INSERT INTO matches (id, match_number, stage, stadium_id, home_team_id, away_team_id, match_time, match_date, status, match_status) VALUES
 (1, 1, 'GROUP', 1, 1, 4, '2030-06-13 20:00:00', '2030-06-13 20:00:00', 'UPCOMING', 'UPCOMING'),
 (2, 2, 'GROUP', 10, 2, 3, '2030-06-14 18:00:00', '2030-06-14 18:00:00', 'UPCOMING', 'UPCOMING'),
@@ -280,7 +297,7 @@ INSERT INTO matches (id, match_number, stage, stadium_id, home_team_id, away_tea
 (23, 104, 'FINAL', 13, NULL, NULL, '2030-07-21 20:00:00', '2030-07-21 20:00:00', 'UPCOMING', 'UPCOMING');
 
 -- ============================================================================
--- 8. STORED PROCEDURE SINH ĐỦ 100,000 GHẾ BẢNG match_seats THEO TRẬN
+-- 9. STORED PROCEDURE SINH 100,000 GHẾ BẢNG match_seats THEO TRẬN
 -- ============================================================================
 
 DELIMITER //
@@ -344,6 +361,6 @@ END //
 
 DELIMITER ;
 
--- Khởi tạo ghế mẫu cho Trận 1 (Khai mạc) và Trận 23 (Chung kết)
+-- Sinh ghế mẫu cho Trận 1 (Khai mạc) và Trận 23 (Chung kết)
 CALL generate_100k_stadium_seats(1);
 CALL generate_100k_stadium_seats(23);
