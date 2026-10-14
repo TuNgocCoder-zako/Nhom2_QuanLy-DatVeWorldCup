@@ -160,8 +160,10 @@ CREATE TABLE orders (
     status ENUM('PENDING', 'PAID', 'CANCELLED') DEFAULT 'PENDING',
     payment_status ENUM('PENDING', 'PAID', 'CANCELLED') DEFAULT 'PENDING',
     payment_method VARCHAR(50) DEFAULT 'SIMULATION',
+    hold_expires_at DATETIME NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_order_hold_expiry (status, hold_expires_at),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
@@ -176,12 +178,14 @@ CREATE TABLE tickets (
     ticket_code VARCHAR(64) NOT NULL UNIQUE,
     price DECIMAL(10,2) NOT NULL DEFAULT 0.00,
     status ENUM('BOOKED', 'CANCELLED', 'VALID') DEFAULT 'BOOKED',
+    check_in_at DATETIME NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
     FOREIGN KEY (match_id) REFERENCES matches(id) ON DELETE CASCADE,
     FOREIGN KEY (match_seat_id) REFERENCES match_seats(id) ON DELETE CASCADE,
-    UNIQUE KEY idx_match_seat_ticket (match_id, match_seat_id)
+    UNIQUE KEY idx_match_seat_ticket (match_id, match_seat_id),
+    INDEX idx_ticket_check_in (ticket_code, status, check_in_at)
 ) ENGINE=InnoDB;
 
 -- ==========================================
