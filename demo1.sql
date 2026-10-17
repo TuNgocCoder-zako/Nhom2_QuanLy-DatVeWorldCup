@@ -216,9 +216,9 @@ INSERT INTO ticket_types (id, type_name, description) VALUES
 
 -- 2. NGƯỜI DÙNG MẪU (Mật khẩu: 123456)
 INSERT INTO users (id, name, full_name, email, password, phone, role) VALUES
-(1, 'System Admin', 'System Admin', 'admin@worldcup2030.com', '$2y$10$e0MYzXyjpJS7Pd0RVvHwHe118a./2i9F14G/M7z26p20R/fP.Wd42', '0901234567', 'ADMIN'),
-(2, 'Nguyễn Văn A', 'Nguyễn Văn A', 'user@gmail.com', '$2y$10$e0MYzXyjpJS7Pd0RVvHwHe118a./2i9F14G/M7z26p20R/fP.Wd42', '0987654321', 'USER'),
-(3, 'Trần Thị B', 'Trần Thị B', 'user_b@gmail.com', '$2y$10$e0MYzXyjpJS7Pd0RVvHwHe118a./2i9F14G/M7z26p20R/fP.Wd42', '0912345678', 'USER');
+(1, 'System Admin', 'System Admin', 'admin@worldcup2030.com', '$2y$10$llQ00qB7KL4WTWH0.hhSQuuIJduwpFdIno5t5qYtlxG17u9O9UbA6', '0901234567', 'ADMIN'),
+(2, 'Nguyễn Văn A', 'Nguyễn Văn A', 'user@gmail.com', '$2y$10$llQ00qB7KL4WTWH0.hhSQuuIJduwpFdIno5t5qYtlxG17u9O9UbA6', '0987654321', 'USER'),
+(3, 'Trần Thị B', 'Trần Thị B', 'user_b@gmail.com', '$2y$10$llQ00qB7KL4WTWH0.hhSQuuIJduwpFdIno5t5qYtlxG17u9O9UbA6', '0912345678', 'USER');
 
 -- 3. QUỐC GIA ĐĂNG CAI
 INSERT INTO host_countries (id, country_name, country_code) VALUES
@@ -303,68 +303,43 @@ INSERT INTO matches (id, match_number, stage, stadium_id, home_team_id, away_tea
 -- ============================================================================
 -- 9. STORED PROCEDURE SINH 100,000 GHẾ BẢNG match_seats THEO TRẬN
 -- ============================================================================
+-- 9. SINH GHẾ MẪU CHO BẢNG match_seats (Tương thích 100% mọi phiên bản MySQL / MariaDB)
+-- ============================================================================
 
-DELIMITER //
+CREATE TEMPORARY TABLE IF NOT EXISTS seq_100 (n INT PRIMARY KEY);
+INSERT INTO seq_100 (n) VALUES
+(1),(2),(3),(4),(5),(6),(7),(8),(9),(10),
+(11),(12),(13),(14),(15),(16),(17),(18),(19),(20),
+(21),(22),(23),(24),(25),(26),(27),(28),(29),(30),
+(31),(32),(33),(34),(35),(36),(37),(38),(39),(40),
+(41),(42),(43),(44),(45),(46),(47),(48),(49),(50);
 
-DROP PROCEDURE IF EXISTS generate_100k_stadium_seats //
+-- Sinh ghế mẫu cho Trận 1 (Khai mạc)
+INSERT IGNORE INTO match_seats (match_id, seat_zone_id, seat_code, price, status)
+SELECT 1, 1, CONCAT('VIP-BLK', b.n, '-R', r.n, '-', LPAD(s.seat_num, 2, '0')), 500.00, 'AVAILABLE'
+FROM seq_100 b
+JOIN seq_100 r ON r.n <= 5
+JOIN (
+    SELECT 1 AS seat_num UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5
+    UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9 UNION ALL SELECT 10
+    UNION ALL SELECT 11 UNION ALL SELECT 12 UNION ALL SELECT 13 UNION ALL SELECT 14 UNION ALL SELECT 15
+    UNION ALL SELECT 16 UNION ALL SELECT 17 UNION ALL SELECT 18 UNION ALL SELECT 19 UNION ALL SELECT 20
+    UNION ALL SELECT 21 UNION ALL SELECT 22 UNION ALL SELECT 23 UNION ALL SELECT 24 UNION ALL SELECT 25
+) s
+WHERE b.n <= 2;
 
-CREATE PROCEDURE generate_100k_stadium_seats(IN target_match_id INT)
-BEGIN
-    DECLARE target_stadium_id INT;
-    DECLARE vip_zone_id INT;
-    DECLARE std_zone_id INT;
+INSERT IGNORE INTO match_seats (match_id, seat_zone_id, seat_code, price, status)
+SELECT 1, 32, CONCAT('STD-', sec.sec_code, '-BLK', (100 + b.n), '-R', r.n, '-', LPAD(s.seat_num, 2, '0')), 150.00, 'AVAILABLE'
+FROM (SELECT 'A' AS sec_code UNION ALL SELECT 'B' AS sec_code) sec
+JOIN seq_100 b ON b.n <= 2
+JOIN seq_100 r ON r.n <= 4
+JOIN (
+    SELECT 1 AS seat_num UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5
+    UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9 UNION ALL SELECT 10
+    UNION ALL SELECT 11 UNION ALL SELECT 12 UNION ALL SELECT 13 UNION ALL SELECT 14 UNION ALL SELECT 15
+    UNION ALL SELECT 16 UNION ALL SELECT 17 UNION ALL SELECT 18 UNION ALL SELECT 19 UNION ALL SELECT 20
+    UNION ALL SELECT 21 UNION ALL SELECT 22 UNION ALL SELECT 23 UNION ALL SELECT 24 UNION ALL SELECT 25
+) s;
 
-    -- Lấy id sân vận động của trận đấu
-    SELECT stadium_id INTO target_stadium_id FROM matches WHERE id = target_match_id;
+DROP TEMPORARY TABLE IF EXISTS seq_100;
 
-    -- Lấy ID khu vực ghế tương ứng
-    SELECT id INTO vip_zone_id FROM seat_zones WHERE stadium_id = target_stadium_id AND type = 'VIP' LIMIT 1;
-    SELECT id INTO std_zone_id FROM seat_zones WHERE stadium_id = target_stadium_id AND type = 'STANDARD' LIMIT 1;
-
-    -- Tạo bảng phụ dãy số
-    CREATE TEMPORARY TABLE IF NOT EXISTS seq_100 (n INT PRIMARY KEY);
-    IF (SELECT COUNT(*) FROM seq_100) = 0 THEN
-        INSERT INTO seq_100 (n) VALUES
-        (1),(2),(3),(4),(5),(6),(7),(8),(9),(10),
-        (11),(12),(13),(14),(15),(16),(17),(18),(19),(20),
-        (21),(22),(23),(24),(25),(26),(27),(28),(29),(30),
-        (31),(32),(33),(34),(35),(36),(37),(38),(39),(40),
-        (41),(42),(43),(44),(45),(46),(47),(48),(49),(50);
-    END IF;
-
-    -- A. Sinh 10,000 Ghế VIP cho trận đấu
-    INSERT INTO match_seats (match_id, seat_zone_id, seat_code, price, status)
-    SELECT target_match_id, vip_zone_id, CONCAT('VIP-BLK', b.n, '-R', r.n, '-', LPAD(s.seat_num, 2, '0')), 500.00, 'AVAILABLE'
-    FROM seq_100 b
-    JOIN seq_100 r ON r.n <= 20
-    JOIN (
-        SELECT 1 AS seat_num UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9 UNION ALL SELECT 10
-        UNION ALL SELECT 11 UNION ALL SELECT 12 UNION ALL SELECT 13 UNION ALL SELECT 14 UNION ALL SELECT 15 UNION ALL SELECT 16 UNION ALL SELECT 17 UNION ALL SELECT 18 UNION ALL SELECT 19 UNION ALL SELECT 20
-        UNION ALL SELECT 21 UNION ALL SELECT 22 UNION ALL SELECT 23 UNION ALL SELECT 24 UNION ALL SELECT 25 UNION ALL SELECT 26 UNION ALL SELECT 27 UNION ALL SELECT 28 UNION ALL SELECT 29 UNION ALL SELECT 30
-        UNION ALL SELECT 31 UNION ALL SELECT 32 UNION ALL SELECT 33 UNION ALL SELECT 34 UNION ALL SELECT 35 UNION ALL SELECT 36 UNION ALL SELECT 37 UNION ALL SELECT 38 UNION ALL SELECT 39 UNION ALL SELECT 40
-        UNION ALL SELECT 41 UNION ALL SELECT 42 UNION ALL SELECT 43 UNION ALL SELECT 44 UNION ALL SELECT 45 UNION ALL SELECT 46 UNION ALL SELECT 47 UNION ALL SELECT 48 UNION ALL SELECT 49 UNION ALL SELECT 50
-    ) s
-    WHERE b.n <= 10;
-
-    -- B. Sinh 90,000 Ghế Phổ thông cho trận đấu
-    INSERT INTO match_seats (match_id, seat_zone_id, seat_code, price, status)
-    SELECT target_match_id, std_zone_id, CONCAT('STD-', sec.sec_code, '-BLK', (100 + b.n), '-R', r.n, '-', LPAD(s.seat_num, 2, '0')), 150.00, 'AVAILABLE'
-    FROM (SELECT 'A' AS sec_code UNION ALL SELECT 'B' UNION ALL SELECT 'C' UNION ALL SELECT 'D') sec
-    JOIN seq_100 b ON b.n <= 15
-    JOIN seq_100 r ON r.n <= 30
-    JOIN (
-        SELECT 1 AS seat_num UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9 UNION ALL SELECT 10
-        UNION ALL SELECT 11 UNION ALL SELECT 12 UNION ALL SELECT 13 UNION ALL SELECT 14 UNION ALL SELECT 15 UNION ALL SELECT 16 UNION ALL SELECT 17 UNION ALL SELECT 18 UNION ALL SELECT 19 UNION ALL SELECT 20
-        UNION ALL SELECT 21 UNION ALL SELECT 22 UNION ALL SELECT 23 UNION ALL SELECT 24 UNION ALL SELECT 25 UNION ALL SELECT 26 UNION ALL SELECT 27 UNION ALL SELECT 28 UNION ALL SELECT 29 UNION ALL SELECT 30
-        UNION ALL SELECT 31 UNION ALL SELECT 32 UNION ALL SELECT 33 UNION ALL SELECT 34 UNION ALL SELECT 35 UNION ALL SELECT 36 UNION ALL SELECT 37 UNION ALL SELECT 38 UNION ALL SELECT 39 UNION ALL SELECT 40
-        UNION ALL SELECT 41 UNION ALL SELECT 42 UNION ALL SELECT 43 UNION ALL SELECT 44 UNION ALL SELECT 45 UNION ALL SELECT 46 UNION ALL SELECT 47 UNION ALL SELECT 48 UNION ALL SELECT 49 UNION ALL SELECT 50
-    ) s;
-
-    DROP TEMPORARY TABLE IF EXISTS seq_100;
-END //
-
-DELIMITER ;
-
--- Sinh ghế mẫu cho Trận 1 (Khai mạc) và Trận 23 (Chung kết)
-CALL generate_100k_stadium_seats(1);
-CALL generate_100k_stadium_seats(23);
