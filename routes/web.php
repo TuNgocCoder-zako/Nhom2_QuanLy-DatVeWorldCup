@@ -27,7 +27,8 @@ Route::prefix('api')->group(function () {
     // API 2: Kiểm tra các ghế người dùng chọn có còn trống không trước khi thanh toán
     Route::post('/matches/{id}/check-seats', [BookingController::class, 'checkSeats']);
 
-    // API 3: Giữ ghế tạm thời. Controller enforces the authenticated account.
+    // API 3: Đặt ghế và tạo đơn hàng (hỗ trợ cả /book-seats và /hold-seats để tương thích)
+    Route::post('/matches/{id}/book-seats', [BookingController::class, 'bookSeats']);
     Route::post('/matches/{id}/hold-seats', [BookingController::class, 'holdSeats']);
 
     // API 4-7: Payment lifecycle.

@@ -38,8 +38,9 @@ Sau đó dùng cookie đã lưu để gọi API, ví dụ:
 ```bash
 curl -i -b cookies.txt -X POST \
   -H 'Content-Type: application/json' \
-  -d '{"user_id":2,"seat_ids":[1,2],"hold_duration_minutes":10}' \
-  http://localhost/PROJECT/Nhom2_QuanLy-DatVeWorldCup/api/matches/1/hold-seats
+  -d '{"user_id":2,"seat_ids":[1,2]}' \
+  http://localhost/PROJECT/Nhom2_QuanLy-DatVeWorldCup/api/matches/1/book-seats
 ```
+*(Lưu ý: Endpoint cũ `/api/matches/1/hold-seats` vẫn được hỗ trợ để tương thích ngược).*
 
 Tài khoản seed trong `demo1.sql`: `user@gmail.com` / `123456` và `admin@worldcup2030.com` / `123456`.

@@ -28,7 +28,6 @@ class PaymentService
                 $order = Order::query()->whereKey($orderId)->lockForUpdate()->first();
                 if (!$order) throw new \OutOfBoundsException('Không tìm thấy đơn hàng.');
                 if ($order->status !== 'PENDING') throw new \DomainException('Đơn hàng không còn chờ thanh toán.');
-                if ($order->hold_expires_at && $order->hold_expires_at->isPast()) throw new \DomainException('Thời gian giữ ghế đã hết hạn.');
                 $existing = Payment::query()->where('order_id', $orderId)->where('status', 'PENDING')->lockForUpdate()->first();
                 if ($existing) return $existing;
                 return Payment::query()->create(['order_id' => $orderId, 'payment_method' => $method,
@@ -54,7 +53,6 @@ class PaymentService
                 if (!$order) throw new \OutOfBoundsException('Không tìm thấy đơn hàng.');
                 if ($order->status === 'PAID') return $order->load('tickets'); // Idempotent webhook retry.
                 if ($order->status !== 'PENDING') throw new \DomainException('Đơn hàng không còn chờ thanh toán.');
-                if ($order->hold_expires_at && $order->hold_expires_at->isPast()) throw new \DomainException('Thời gian giữ ghế đã hết hạn.');
 
                 $payment = Payment::query()->where('order_id', $orderId)->where('transaction_id', $transactionId)->lockForUpdate()->first();
                 if (!$payment) throw new \DomainException('Không tìm thấy giao dịch thanh toán hợp lệ.');
@@ -63,11 +61,11 @@ class PaymentService
                 if ($this->toCents((string) $payment->amount) !== $this->toCents((string) $order->total_price)) throw new \DomainException('Số tiền thanh toán không khớp đơn hàng.');
 
                 $tickets = Ticket::query()->where('order_id', $orderId)->lockForUpdate()->get();
-                if ($tickets->isEmpty()) throw new \DomainException('Đơn hàng không có ghế đang giữ.');
+                if ($tickets->isEmpty()) throw new \DomainException('Đơn hàng không có ghế.');
                 $seatIds = $tickets->pluck('match_seat_id')->all();
                 $seats = MatchSeat::query()->whereIn('id', $seatIds)->orderBy('id')->lockForUpdate()->get();
-                if ($seats->count() !== count($seatIds) || $seats->contains(fn (MatchSeat $seat): bool => $seat->status !== 'HELD')) {
-                    throw new \DomainException('Ghế giữ không còn hợp lệ.');
+                if ($seats->count() !== count($seatIds) || $seats->contains(fn (MatchSeat $seat): bool => $seat->status !== 'HELD' && $seat->status !== 'BOOKED')) {
+                    throw new \DomainException('Ghế đã đặt không còn hợp lệ.');
                 }
 
                 $payment->status = 'SUCCESS';
@@ -104,12 +102,12 @@ class PaymentService
                     $payment->status = 'FAILED'; $payment->save();
                 });
                 $tickets = Ticket::query()->where('order_id', $orderId)->get(['id', 'match_seat_id']);
-                MatchSeat::query()->whereIn('id', $tickets->pluck('match_seat_id'))->where('status', 'HELD')->lockForUpdate()->update(['status' => 'AVAILABLE']);
+                MatchSeat::query()->whereIn('id', $tickets->pluck('match_seat_id'))->whereIn('status', ['HELD', 'BOOKED'])->lockForUpdate()->update(['status' => 'AVAILABLE']);
                 Ticket::query()->where('order_id', $orderId)->delete();
                 $order->status = 'CANCELLED'; $order->payment_status = 'CANCELLED'; $order->save();
                 return $order;
             }, 3);
-            Log::info('Payment failed; order cancelled and held seats released.', ['order_id' => $orderId, 'reason' => $reason]);
+            Log::info('Payment failed; order cancelled and seats released.', ['order_id' => $orderId, 'reason' => $reason]);
             return $this->result(true, 'Thanh toán thất bại; đơn hàng đã hủy và ghế được giải phóng.', $order);
         } catch (\OutOfBoundsException $exception) {
             return $this->result(false, $exception->getMessage(), null, 404);

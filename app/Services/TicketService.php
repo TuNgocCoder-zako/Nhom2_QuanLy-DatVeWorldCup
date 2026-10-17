@@ -29,7 +29,7 @@ class TicketService
                 if ($tickets->isEmpty()) throw new \DomainException('Đơn hàng không có ghế để phát hành vé.');
                 foreach ($tickets as $ticket) {
                     if ($ticket->status === 'CANCELLED') throw new \DomainException('Không thể phát hành vé đã hủy.');
-                    if (str_starts_with((string) $ticket->ticket_code, 'HOLD-')) $ticket->ticket_code = (string) Str::uuid();
+                    if (str_starts_with((string) $ticket->ticket_code, 'HOLD-') || str_starts_with((string) $ticket->ticket_code, 'TICKET-')) $ticket->ticket_code = (string) Str::uuid();
                     $ticket->status = 'VALID';
                     $ticket->save();
                 }

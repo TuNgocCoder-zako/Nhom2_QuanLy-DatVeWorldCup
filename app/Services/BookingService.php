@@ -39,58 +39,52 @@ class BookingService
     }
 
     /** @param list<int> $seatIds @return array{success:bool,message:string,data:mixed,code:int} */
-    public function holdSeats(int $userId, int $matchId, array $seatIds, int $holdDurationMinutes = 10): array
+    public function bookSeats(int $userId, int $matchId, array $seatIds): array
     {
         $seatIds = array_values(array_unique(array_map('intval', $seatIds)));
-        if (!$seatIds || min($seatIds) < 1 || $holdDurationMinutes < 1 || $holdDurationMinutes > 60) return $this->result(false, 'Chọn ghế hợp lệ và thời hạn giữ từ 1 đến 60 phút.', null, 400);
+        if (!$seatIds || min($seatIds) < 1) return $this->result(false, 'Vui lòng chọn ít nhất một ghế hợp lệ.', null, 400);
 
         try {
-            $order = DB::transaction(function () use ($userId, $matchId, $seatIds, $holdDurationMinutes): Order {
+            $order = DB::transaction(function () use ($userId, $matchId, $seatIds): Order {
                 $seats = MatchSeat::query()->where('match_id', $matchId)->whereIn('id', $seatIds)->orderBy('id')->lockForUpdate()->get();
                 if ($seats->count() !== count($seatIds)) throw new \DomainException('Một số ghế không tồn tại hoặc không thuộc trận đấu này.');
-                if ($seats->contains(fn (MatchSeat $seat): bool => $seat->status !== 'AVAILABLE')) throw new \DomainException('Một hoặc nhiều ghế vừa được người khác giữ hoặc đặt.');
+                if ($seats->contains(fn (MatchSeat $seat): bool => $seat->status !== 'AVAILABLE')) throw new \DomainException('Một hoặc nhiều ghế vừa được người khác đặt.');
 
                 $totalCents = $seats->sum(fn (MatchSeat $seat) => (int) round((float) $seat->price * 100));
                 $total = number_format($totalCents / 100, 2, '.', '');
-                $expiresAt = now()->addMinutes($holdDurationMinutes);
                 $order = Order::query()->create([
                     'user_id' => $userId, 'order_code' => 'WC-' . Str::upper(Str::random(20)),
                     'total_price' => $total, 'total_amount' => $total, 'status' => 'PENDING', 'payment_status' => 'PENDING',
-                    'payment_method' => 'SIMULATION', 'hold_expires_at' => $expiresAt,
+                    'payment_method' => 'SIMULATION', 'hold_expires_at' => null,
                 ]);
                 foreach ($seats as $seat) {
-                    // BOOKED is a provisional reservation linked to this order until payment.
                     Ticket::query()->create(['order_id' => $order->id, 'match_id' => $matchId, 'match_seat_id' => $seat->id,
-                        'ticket_code' => 'HOLD-' . Str::upper(Str::random(24)), 'price' => $seat->price, 'status' => 'BOOKED']);
-                    $seat->status = 'HELD';
+                        'ticket_code' => 'TICKET-' . Str::upper(Str::random(24)), 'price' => $seat->price, 'status' => 'BOOKED']);
+                    $seat->status = 'BOOKED';
                     $seat->save();
                 }
                 return $order->load('tickets');
             }, 3);
 
-            return $this->result(true, 'Đã giữ ghế tạm thời.', ['order' => $order, 'expires_at' => $order->hold_expires_at]);
+            return $this->result(true, 'Đặt ghế thành công, đơn hàng đang chờ thanh toán.', ['order' => $order]);
         } catch (\DomainException $exception) {
             return $this->result(false, $exception->getMessage(), null, 409);
         } catch (Throwable $exception) {
-            Log::error('Unable to hold match seats.', ['match_id' => $matchId, 'user_id' => $userId, 'exception' => $exception]);
-            return $this->result(false, 'Không thể giữ ghế lúc này. Vui lòng thử lại.', null, 500);
+            Log::error('Unable to book match seats.', ['match_id' => $matchId, 'user_id' => $userId, 'exception' => $exception]);
+            return $this->result(false, 'Không thể đặt ghế lúc này. Vui lòng thử lại.', null, 500);
         }
     }
 
-    /** Cancel pending orders whose hold timestamp has elapsed. */
+    /** Compatibility alias for legacy holdSeats callers. */
+    public function holdSeats(int $userId, int $matchId, array $seatIds, int $holdDurationMinutes = 10): array
+    {
+        return $this->bookSeats($userId, $matchId, $seatIds);
+    }
+
+    /** Giữ method này để các tác vụ định kỳ/admin không bị lỗi; tính năng hết hạn giữ ghế đã được tắt. */
     public function releaseExpiredHolds(): array
     {
-        try {
-            $released = DB::transaction(function (): int {
-                $orders = Order::query()->pending()->whereNotNull('hold_expires_at')->where('hold_expires_at', '<=', now())->orderBy('id')->lockForUpdate()->get();
-                foreach ($orders as $order) $this->cancelLockedOrder($order);
-                return $orders->count();
-            }, 3);
-            return $this->result(true, 'Đã giải phóng các lượt giữ ghế hết hạn.', ['released_orders' => $released]);
-        } catch (Throwable $exception) {
-            Log::error('Unable to release expired seat holds.', ['exception' => $exception]);
-            return $this->result(false, 'Không thể giải phóng ghế hết hạn.', null, 500);
-        }
+        return $this->result(true, 'Chức năng giữ ghế có thời hạn đã được tắt. Không có đơn hàng nào bị hủy.', ['released_orders' => 0]);
     }
 
     /** Cancel an unpaid order owned by the user, or any unpaid order for an admin. */
@@ -134,7 +128,7 @@ class BookingService
     {
         $tickets = Ticket::query()->where('order_id', $order->id)->get(['id', 'match_seat_id']);
         $seatIds = $tickets->pluck('match_seat_id')->all();
-        if ($seatIds) MatchSeat::query()->whereIn('id', $seatIds)->where('status', 'HELD')->lockForUpdate()->update(['status' => 'AVAILABLE']);
+        if ($seatIds) MatchSeat::query()->whereIn('id', $seatIds)->whereIn('status', ['HELD', 'BOOKED'])->lockForUpdate()->update(['status' => 'AVAILABLE']);
         Ticket::query()->where('order_id', $order->id)->delete();
         $order->status = 'CANCELLED';
         $order->payment_status = 'CANCELLED';

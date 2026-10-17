@@ -56,24 +56,31 @@ class BookingController extends ApiController
     }
 
     /**
-     * API 3: giữ ghế trong một đơn hàng PENDING có thời hạn.
-     * POST /api/matches/{id}/hold-seats
+     * API 3: Đặt ghế trực tiếp tạo đơn hàng chờ thanh toán (không giới hạn thời gian giữ ghế).
+     * POST /api/matches/{id}/book-seats
      */
-    public function holdSeats(Request $request, $id): JsonResponse
+    public function bookSeats(Request $request, $id): JsonResponse
     {
         $user = $this->requireAuthenticatedUser($request);
         if ($user instanceof JsonResponse) return $user;
 
         $seatIds = $request->input('seat_ids');
         $requestedUserId = $request->input('user_id');
-        $duration = $request->input('hold_duration_minutes', 10);
-        if (!is_array($seatIds) || $seatIds === [] || filter_var($duration, FILTER_VALIDATE_INT) === false) {
-            return $this->response(false, 'seat_ids phải là mảng không rỗng và hold_duration_minutes phải là số nguyên.', null, 422);
+        if (!is_array($seatIds) || $seatIds === []) {
+            return $this->response(false, 'seat_ids phải là mảng không rỗng.', null, 422);
         }
         if ($requestedUserId !== null && (int) $requestedUserId !== (int) $user->id) {
-            return $this->response(false, 'Không được giữ ghế thay cho tài khoản khác.', null, 403);
+            return $this->response(false, 'Không được đặt ghế thay cho tài khoản khác.', null, 403);
         }
 
-        return $this->serviceResponse($this->bookingService->holdSeats((int) $user->id, (int) $id, $seatIds, (int) $duration));
+        return $this->serviceResponse($this->bookingService->bookSeats((int) $user->id, (int) $id, $seatIds));
+    }
+
+    /**
+     * Tương thích ngược: POST /api/matches/{id}/hold-seats
+     */
+    public function holdSeats(Request $request, $id): JsonResponse
+    {
+        return $this->bookSeats($request, $id);
     }
 }
