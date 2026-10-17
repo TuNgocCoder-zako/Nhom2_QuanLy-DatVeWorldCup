@@ -84,6 +84,8 @@ class BookingService
      */
     public function checkSeatsAvailability(int $matchId, array $seatIds): array
     {
+        $seatIds = array_values(array_unique(array_map('intval', $seatIds)));
+
         if (empty($seatIds)) {
             return [
                 'success'      => false,
