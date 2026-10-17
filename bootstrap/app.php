@@ -63,6 +63,9 @@ $config = new Repository(['database' => [
 $container->instance('config', $config);
 $container->instance('log', new NullLogger());
 
+$translator = new \Illuminate\Translation\Translator(new \Illuminate\Translation\ArrayLoader(), 'vi');
+$container->instance('translator', $translator);
+
 $capsule = new Capsule($container);
 $capsule->addConnection($config->get('database.connections.mysql'));
 $capsule->setEventDispatcher(new Dispatcher($container));

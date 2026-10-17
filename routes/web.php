@@ -26,10 +26,13 @@ Route::prefix('api')->group(function () {
 
     // API 2: Kiểm tra các ghế người dùng chọn có còn trống không trước khi thanh toán
     Route::post('/matches/{id}/check-seats', [BookingController::class, 'checkSeats']);
+    Route::post('/check-seats', [BookingController::class, 'checkSeats']);
 
-    // API 3: Đặt ghế và tạo đơn hàng (hỗ trợ cả /book-seats và /hold-seats để tương thích)
+    // API 3: Đặt ghế và tạo đơn hàng (hỗ trợ cả /book-seats và /hold-seats, có hoặc không có match_id trong URL)
     Route::post('/matches/{id}/book-seats', [BookingController::class, 'bookSeats']);
+    Route::post('/book-seats', [BookingController::class, 'bookSeats']);
     Route::post('/matches/{id}/hold-seats', [BookingController::class, 'holdSeats']);
+    Route::post('/hold-seats', [BookingController::class, 'holdSeats']);
 
     // API 4-7: Payment lifecycle.
     Route::post('/orders/{orderId}/payment', [PaymentController::class, 'create']);
@@ -41,6 +44,10 @@ Route::prefix('api')->group(function () {
     Route::delete('/orders/{orderId}', [OrderController::class, 'cancel']);
     Route::get('/orders/{orderId}', [OrderController::class, 'show']);
     Route::get('/users/{userId}/orders', [OrderController::class, 'indexForUser']);
+
+    // API: Quản lý vé
+    Route::get('/users/{userId}/tickets', [\App\Http\Controllers\TicketController::class, 'indexForUser']);
+    Route::get('/tickets/{code}', [\App\Http\Controllers\TicketController::class, 'show']);
 
     // API 11: Internal admin maintenance.
     Route::post('/maintenance/release-expired-holds', [MaintenanceController::class, 'releaseExpiredHolds']);

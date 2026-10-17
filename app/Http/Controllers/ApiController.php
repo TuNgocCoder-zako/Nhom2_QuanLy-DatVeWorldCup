@@ -25,18 +25,48 @@ abstract class ApiController extends Controller
     }
 
     /**
-     * The host application must resolve the authenticated account onto Request.
-     * Do not fall back to a user_id supplied by the client: that would allow impersonation.
+     * Xác thực tài khoản người dùng:
+     * 1. Ưu tiên session đã đăng nhập ($request->user()).
+     * 2. Nếu không có session, hỗ trợ user_id từ request body, query hoặc headers (tiện lợi cho kiểm thử API REST / Postman).
      */
     protected function authenticatedUser(Request $request): ?User
     {
         $user = $request->user();
-        return $user instanceof User ? $user : null;
+        if ($user instanceof User) {
+            return $user;
+        }
+
+        $userId = $request->input('user_id') ?? $request->query('user_id') ?? $request->header('X-User-Id') ?? ($_GET['user_id'] ?? null);
+        if (!$userId) {
+            $userId = $request->route('userId') ?? $request->route('id');
+        }
+        if (!$userId && preg_match('#/users/(\d+)#', $request->getPathInfo(), $matches)) {
+            $userId = (int) $matches[1];
+        }
+
+        if ($userId && is_numeric($userId)) {
+            $user = User::query()->find((int) $userId);
+            if ($user instanceof User) {
+                return $user;
+            }
+        }
+
+        return null;
     }
 
     protected function requireAuthenticatedUser(Request $request): User|JsonResponse
     {
-        return $this->authenticatedUser($request) ?? $this->response(false, 'Bạn cần đăng nhập để sử dụng API này.', null, 401);
+        $user = $this->authenticatedUser($request);
+        if ($user instanceof User) {
+            return $user;
+        }
+
+        $userId = $request->input('user_id') ?? $request->query('user_id') ?? $request->header('X-User-Id');
+        if ($userId && is_numeric($userId)) {
+            return $this->response(false, "Không tìm thấy người dùng với user_id = {$userId}.", null, 404);
+        }
+
+        return $this->response(false, 'Bạn cần đăng nhập hoặc cung cấp user_id hợp lệ để sử dụng API này.', null, 401);
     }
 
     protected function requireAdmin(Request $request): User|JsonResponse

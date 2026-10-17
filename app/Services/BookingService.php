@@ -46,6 +46,12 @@ class BookingService
 
         try {
             $order = DB::transaction(function () use ($userId, $matchId, $seatIds): Order {
+                $match = MatchGame::query()->find($matchId);
+                if (!$match) throw new \DomainException('Không tìm thấy trận đấu.');
+
+                $user = \App\Models\User::query()->find($userId);
+                if (!$user) throw new \DomainException('Không tìm thấy người dùng hợp lệ.');
+
                 $seats = MatchSeat::query()->where('match_id', $matchId)->whereIn('id', $seatIds)->orderBy('id')->lockForUpdate()->get();
                 if ($seats->count() !== count($seatIds)) throw new \DomainException('Một số ghế không tồn tại hoặc không thuộc trận đấu này.');
                 if ($seats->contains(fn (MatchSeat $seat): bool => $seat->status !== 'AVAILABLE')) throw new \DomainException('Một hoặc nhiều ghế vừa được người khác đặt.');
@@ -63,7 +69,7 @@ class BookingService
                     $seat->status = 'BOOKED';
                     $seat->save();
                 }
-                return $order->load('tickets');
+                return $order->load(['tickets.matchSeat.seatZone']);
             }, 3);
 
             return $this->result(true, 'Đặt ghế thành công, đơn hàng đang chờ thanh toán.', ['order' => $order]);
@@ -71,7 +77,7 @@ class BookingService
             return $this->result(false, $exception->getMessage(), null, 409);
         } catch (Throwable $exception) {
             Log::error('Unable to book match seats.', ['match_id' => $matchId, 'user_id' => $userId, 'exception' => $exception]);
-            return $this->result(false, 'Không thể đặt ghế lúc này. Vui lòng thử lại.', null, 500);
+            return $this->result(false, 'Không thể đặt ghế: ' . $exception->getMessage(), null, 500);
         }
     }
 
@@ -115,6 +121,10 @@ class BookingService
     {
         $seatIds = array_values(array_unique(array_map('intval', $seatIds)));
         if (!$seatIds) return $this->availabilityResult(false, 'Vui lòng chọn ít nhất một ghế.', ['is_available' => false, 'locked_seats' => []], [], 400);
+
+        $match = MatchGame::query()->find($matchId);
+        if (!$match) return $this->availabilityResult(false, 'Không tìm thấy trận đấu.', ['is_available' => false, 'locked_seats' => []], [], 404);
+
         $seats = MatchSeat::query()->where('match_id', $matchId)->whereIn('id', $seatIds)->get(['id', 'seat_code', 'price', 'status']);
         if ($seats->count() !== count($seatIds)) return $this->availabilityResult(false, 'Một số ghế không tồn tại hoặc không thuộc trận đấu này.', ['is_available' => false, 'locked_seats' => []], [], 404);
         $locked = $seats->where('status', '!=', 'AVAILABLE')->map(fn (MatchSeat $seat) => ['id' => $seat->id, 'seat_code' => $seat->seat_code, 'status' => $seat->status])->values();

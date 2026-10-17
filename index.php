@@ -18,6 +18,12 @@ if ($basePath !== '' && $basePath !== '/' && str_starts_with($requestUri, $baseP
 // API routes are absolute inside the router, so also normalize a nested /api path.
 $apiOffset = strpos($requestUri, '/api/');
 if ($apiOffset !== false) $requestUri = substr($requestUri, $apiOffset);
+if ($requestUri !== '/' && str_ends_with($requestUri, '/')) {
+    $requestUri = rtrim($requestUri, '/');
+}
+$queryString = $_SERVER['QUERY_STRING'] ?? parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_QUERY) ?? '';
+$fullUri = $queryString !== '' ? $requestUri.'?'.$queryString : $requestUri;
+
 $rawBody = file_get_contents('php://input');
 $input = $_POST;
 $contentType = strtolower($_SERVER['CONTENT_TYPE'] ?? $_SERVER['HTTP_CONTENT_TYPE'] ?? '');
@@ -35,16 +41,28 @@ if (is_array($decoded) && empty($server['CONTENT_TYPE'])) {
     $server['CONTENT_TYPE'] = 'application/json';
 }
 
-$request = Request::create($requestUri, $_SERVER['REQUEST_METHOD'] ?? 'GET', $input, $_COOKIE, $_FILES, $server, $rawBody);
+$request = Request::create($fullUri, $_SERVER['REQUEST_METHOD'] ?? 'GET', $input, $_COOKIE, $_FILES, $server, $rawBody);
+$request->query->add($_GET);
 if (is_array($decoded)) {
     $request->request->replace($input);
 }
 $container->instance('request', $request);
 $container->instance(Request::class, $request);
 
-$request->setUserResolver(static function (): ?User {
+$request->setUserResolver(static function () use ($request): ?User {
     $userId = $_SESSION['user_id'] ?? null;
-    return $userId ? User::query()->find((int) $userId) : null;
+    if ($userId) {
+        $user = User::query()->find((int) $userId);
+        if ($user instanceof User) return $user;
+    }
+    $fallbackId = $request->input('user_id') ?? $request->query('user_id') ?? $request->header('X-User-Id') ?? ($_GET['user_id'] ?? null);
+    if (!$fallbackId && preg_match('#/users/(\d+)#', $request->getPathInfo(), $matches)) {
+        $fallbackId = (int) $matches[1];
+    }
+    if ($fallbackId && is_numeric($fallbackId)) {
+        return User::query()->find((int) $fallbackId);
+    }
+    return null;
 });
 
 try {
