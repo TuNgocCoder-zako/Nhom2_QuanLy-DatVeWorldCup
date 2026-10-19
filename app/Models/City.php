@@ -19,6 +19,10 @@ class City extends Model
     {
         return $this->belongsTo(HostCountry::class, 'country_id', 'id');
     }
+    public function hostCountry(): BelongsTo
+    {
+        return $this->country();
+    }
     public function stadiums(): HasMany
     {
         return $this->hasMany(Stadium::class, 'city_id', 'id');
