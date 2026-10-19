@@ -82,18 +82,24 @@ Route::prefix('admin')->group(function () {
 
     // STT 19 - 22: Quản lý đội tuyển tham dự
     Route::get('/teams', [AdminTeamController::class, 'index'])->name('admin.teams.index');
+    Route::get('/teams/create', [AdminTeamController::class, 'create'])->name('admin.teams.create');
+    Route::get('/teams/{id}/edit', [AdminTeamController::class, 'edit'])->name('admin.teams.edit');
     Route::post('/teams', [AdminTeamController::class, 'store'])->name('admin.teams.store');
     Route::put('/teams/{id}', [AdminTeamController::class, 'update'])->name('admin.teams.update');
     Route::delete('/teams/{id}', [AdminTeamController::class, 'destroy'])->name('admin.teams.destroy');
 
     // STT 23 - 26: Quản lý sân vận động & khu ghế
     Route::get('/stadiums', [AdminStadiumController::class, 'index'])->name('admin.stadiums.index');
+    Route::get('/stadiums/create', [AdminStadiumController::class, 'create'])->name('admin.stadiums.create');
+    Route::get('/stadiums/{id}/edit', [AdminStadiumController::class, 'edit'])->name('admin.stadiums.edit');
     Route::post('/stadiums', [AdminStadiumController::class, 'store'])->name('admin.stadiums.store');
     Route::put('/stadiums/{id}', [AdminStadiumController::class, 'update'])->name('admin.stadiums.update');
     Route::delete('/stadiums/{id}', [AdminStadiumController::class, 'destroy'])->name('admin.stadiums.destroy');
 
     // STT 27 - 30: Quản lý lịch đấu & tự động sinh ghế
     Route::get('/matches', [AdminMatchController::class, 'index'])->name('admin.matches.index');
+    Route::get('/matches/create', [AdminMatchController::class, 'create'])->name('admin.matches.create');
+    Route::get('/matches/{id}/edit', [AdminMatchController::class, 'edit'])->name('admin.matches.edit');
     Route::post('/matches', [AdminMatchController::class, 'store'])->name('admin.matches.store');
     Route::put('/matches/{id}', [AdminMatchController::class, 'update'])->name('admin.matches.update');
     Route::delete('/matches/{id}', [AdminMatchController::class, 'destroy'])->name('admin.matches.destroy');
@@ -105,6 +111,7 @@ Route::prefix('admin')->group(function () {
 
     // STT 34 - 35: Quản lý người dùng & phân quyền tài khoản
     Route::get('/users', [AdminUserController::class, 'index'])->name('admin.users.index');
+    Route::get('/users/{id}/edit', [AdminUserController::class, 'edit'])->name('admin.users.edit');
     Route::put('/users/{id}', [AdminUserController::class, 'update'])->name('admin.users.update');
 });
 

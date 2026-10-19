@@ -37,6 +37,25 @@ class TeamController extends ApiController
     }
 
     /**
+     * GET /admin/teams/create
+     */
+    public function create(): View
+    {
+        $groups = ['A','B','C','D','E','F','G','H','I','J','K','L'];
+        return view('admin.teams.create', compact('groups'));
+    }
+
+    /**
+     * GET /admin/teams/{id}/edit
+     */
+    public function edit(int $id): View
+    {
+        $team = Team::findOrFail($id);
+        $groups = ['A','B','C','D','E','F','G','H','I','J','K','L'];
+        return view('admin.teams.edit', compact('team', 'groups'));
+    }
+
+    /**
      * POST /admin/teams
      */
     public function store(Request $request): RedirectResponse

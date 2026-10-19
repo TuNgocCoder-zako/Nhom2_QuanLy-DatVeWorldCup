@@ -28,6 +28,23 @@ class StadiumController extends ApiController
     }
 
     /**
+     * GET /admin/stadiums/create
+     */
+    public function create(): View
+    {
+        return view('admin.stadiums.create');
+    }
+
+    /**
+     * GET /admin/stadiums/{id}/edit
+     */
+    public function edit(int $id): View
+    {
+        $stadium = Stadium::findOrFail($id);
+        return view('admin.stadiums.edit', compact('stadium'));
+    }
+
+    /**
      * POST /admin/stadiums
      */
     public function store(Request $request): RedirectResponse

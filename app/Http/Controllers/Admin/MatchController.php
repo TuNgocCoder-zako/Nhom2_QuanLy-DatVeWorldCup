@@ -41,6 +41,25 @@ class MatchController extends ApiController
     }
 
     /**
+     * GET /admin/matches/create
+     */
+    public function create(): View
+    {
+        $teams = Team::query()->orderBy('name')->get();
+        $stadiums = Stadium::query()->orderBy('name')->get();
+        return view('admin.matches.create', compact('teams', 'stadiums'));
+    }
+
+    /**
+     * GET /admin/matches/{id}/edit
+     */
+    public function edit(int $id): View
+    {
+        $match = MatchGame::with(['homeTeam', 'awayTeam', 'stadium'])->findOrFail($id);
+        return view('admin.matches.edit', compact('match'));
+    }
+
+    /**
      * POST /admin/matches
      * Tạo lịch thi đấu mới và tự động sinh 500 ghế theo các khu khán đài của sân
      */

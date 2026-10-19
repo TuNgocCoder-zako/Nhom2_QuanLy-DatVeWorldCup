@@ -37,6 +37,15 @@ class UserController extends ApiController
     }
 
     /**
+     * GET /admin/users/{id}/edit
+     */
+    public function edit(int $id): View
+    {
+        $user = User::findOrFail($id);
+        return view('admin.users.edit', compact('user'));
+    }
+
+    /**
      * PUT /admin/users/{id}
      * Phân quyền (USER / ADMIN) hoặc cập nhật trạng thái
      */
