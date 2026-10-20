@@ -35,10 +35,10 @@ class MatchController extends Controller
 
         // Nếu không tìm thấy trận đấu -> HTTP 404 Not Found
         if (!$result['success']) {
-            return response()->json($result, 404);
+            return new JsonResponse($result, 404);
         }
 
         // Thành công -> HTTP 200 OK
-        return response()->json($result, 200);
+        return new JsonResponse($result, 200);
     }
 }
