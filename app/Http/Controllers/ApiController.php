@@ -36,6 +36,14 @@ abstract class ApiController extends Controller
             return $user;
         }
 
+        $sessionUserId = session('user_id') ?? ($_SESSION['user_id'] ?? null);
+        if ($sessionUserId && is_numeric($sessionUserId)) {
+            $user = User::query()->find((int) $sessionUserId);
+            if ($user instanceof User) {
+                return $user;
+            }
+        }
+
         $userId = $request->input('user_id') ?? $request->query('user_id') ?? $request->header('X-User-Id') ?? ($_GET['user_id'] ?? null);
         if (!$userId) {
             $userId = $request->route('userId') ?? $request->route('id');

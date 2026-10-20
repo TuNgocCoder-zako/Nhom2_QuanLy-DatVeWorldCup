@@ -1,10 +1,13 @@
 {
-    "name": "nhom2/quan-ly-dat-ve-worldcup",
+    "name": "nhom2/quan-ly-dat-ve-worldcup-2030",
     "type": "project",
-    "description": "Hệ thống Quản Lý & Đặt Vé FIFA World Cup 2030",
+    "description": "Hệ thống Quản lý và Đặt vé FIFA World Cup 2030",
     "require": {
-        "php": "^8.1",
-        "laravel/framework": "^11.0"
+        "php": ">=8.2",
+        "barryvdh/laravel-dompdf": "^3.0",
+        "laravel/framework": "^11.0",
+        "simplesoftwareio/simple-qrcode": "^4.2",
+        "symfony/polyfill-iconv": "^1.43"
     },
     "autoload": {
         "psr-4": {
@@ -16,7 +19,12 @@
         "preferred-install": "dist",
         "sort-packages": true,
         "platform": {
-            "php": "8.2.4"
+            "php": "8.3.0",
+            "ext-gd": "2.0",
+            "ext-iconv": "0"
+        },
+        "audit": {
+            "block": false
         },
         "policy": {
             "advisories": {

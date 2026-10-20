@@ -21,13 +21,11 @@ class Order extends Model
         'status',          // 'PENDING', 'PAID', 'CANCELLED'
         'payment_status',  // 'PENDING', 'PAID', 'CANCELLED'
         'payment_method',  // 'SIMULATION'
-        'hold_expires_at',
     ];
 
     protected $casts = [
         'total_price'  => 'decimal:2',
         'total_amount' => 'decimal:2',
-        'hold_expires_at' => 'datetime',
     ];
 
     // Đơn hàng thuộc về 1 người dùng (@ManyToOne)

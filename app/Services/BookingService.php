@@ -61,7 +61,7 @@ class BookingService
                 $order = Order::query()->create([
                     'user_id' => $userId, 'order_code' => 'WC-' . Str::upper(Str::random(20)),
                     'total_price' => $total, 'total_amount' => $total, 'status' => 'PENDING', 'payment_status' => 'PENDING',
-                    'payment_method' => 'SIMULATION', 'hold_expires_at' => null,
+                    'payment_method' => 'SIMULATION',
                 ]);
                 foreach ($seats as $seat) {
                     Ticket::query()->create(['order_id' => $order->id, 'match_id' => $matchId, 'match_seat_id' => $seat->id,
