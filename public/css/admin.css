@@ -1,0 +1,38 @@
+/* Custom styles for Admin Dashboard & Management */
+.admin-card {
+    border-radius: 10px;
+    border: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.admin-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08) !important;
+}
+
+.admin-stat-icon {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+}
+
+.table-admin th {
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+    color: #6c757d;
+}
+
+.badge-role-admin {
+    background-color: #dc3545;
+    color: #ffffff;
+}
+
+.badge-role-user {
+    background-color: #0d6efd;
+    color: #ffffff;
+}
