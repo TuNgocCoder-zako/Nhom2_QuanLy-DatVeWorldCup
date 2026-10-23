@@ -1,13 +1,19 @@
 @extends('layouts.app')
 
-@section('title', 'Xác Nhận Đặt Vé & Thanh Toán - World Cup 2030')
+@section('title', 'Xác Nhận Đặt Vé & Thanh Toán - FIFA World Cup 2030')
 
 @section('content')
 <div class="container py-4">
     <!-- Header -->
     <div class="mb-4">
-        <h2 class="fw-bold text-dark"><i class="fa-solid fa-credit-card text-warning me-2"></i> Xác Nhận Đơn Hàng & Thanh Toán</h2>
-        <p class="text-secondary mb-0">Kiểm tra thông tin vé đã chọn và lựa chọn phương thức thanh toán</p>
+        <div class="d-flex align-items-center gap-2 mb-1">
+            <span class="badge bg-warning text-dark fw-bold px-2 py-1 text-uppercase" style="font-size: 0.72rem;">Bước 2 / 2</span>
+            <span class="text-secondary small">Xác nhận thanh toán an toàn</span>
+        </div>
+        <h1 class="font-display fw-bold text-dark fs-2 mb-1">
+            <i class="fa-solid fa-credit-card text-warning me-2"></i> Xác Nhận Đơn Hàng & Thanh Toán
+        </h1>
+        <p class="text-secondary mb-0">Kiểm tra thông tin vé đã chọn và lựa chọn phương thức thanh toán an toàn</p>
     </div>
 
     <form action="{{ url('/booking/payment') }}" method="POST">
@@ -21,16 +27,25 @@
             <!-- Left Column: Match & Seats Details -->
             <div class="col-lg-8">
                 <!-- Match Information Card -->
-                <div class="card shadow-sm border-0 mb-4 bg-white">
-                    <div class="card-header bg-dark text-white p-3 d-flex justify-content-between align-items-center" style="background: #0b132b !important;">
-                        <span class="fw-bold text-warning"><i class="fa-solid fa-futbol me-2"></i> Thông Tin Trận Đấu</span>
-                        <span class="badge bg-warning text-dark">Trận #{{ $match->match_number ?? $match->id }}</span>
+                <div class="card shadow-sm border-0 mb-4 bg-white rounded-4 overflow-hidden">
+                    <div class="card-header p-3 d-flex justify-content-between align-items-center text-white" style="background: #0b1328 !important; border-bottom: 2px solid #f59e0b;">
+                        <span class="fw-bold text-warning font-display"><i class="fa-solid fa-futbol me-2"></i> Thông Tin Trận Đấu</span>
+                        <span class="badge bg-warning text-dark fw-bold">Trận #{{ $match->match_number ?? $match->id }}</span>
                     </div>
                     <div class="card-body p-4">
-                        <h4 class="fw-bold text-dark mb-2">
-                            {{ $match->homeTeam->name ?? 'Đội nhà' }} <span class="text-warning">VS</span> {{ $match->awayTeam->name ?? 'Đội khách' }}
-                        </h4>
-                        <div class="row text-secondary small g-2">
+                        <div class="d-flex align-items-center gap-3 mb-3 flex-wrap">
+                            <div class="d-flex align-items-center gap-2">
+                                <img src="{{ $match->homeTeam->flag_url }}" alt="{{ $match->homeTeam->name }}" class="wc-flag-shield mb-0" style="width: 44px; height: 30px;">
+                                <strong class="fs-5 text-dark font-display">{{ $match->homeTeam->name ?? 'Đội nhà' }}</strong>
+                            </div>
+                            <span class="badge bg-light text-dark fw-bold px-2 py-1">VS</span>
+                            <div class="d-flex align-items-center gap-2">
+                                <img src="{{ $match->awayTeam->flag_url }}" alt="{{ $match->awayTeam->name }}" class="wc-flag-shield mb-0" style="width: 44px; height: 30px;">
+                                <strong class="fs-5 text-dark font-display">{{ $match->awayTeam->name ?? 'Đội khách' }}</strong>
+                            </div>
+                        </div>
+
+                        <div class="row text-secondary small g-2 pt-2 border-top">
                             <div class="col-sm-6">
                                 <i class="fa-solid fa-trophy text-warning me-1"></i> Giai đoạn: <strong>{{ $match->stage ?? 'Vòng bảng' }}</strong>
                             </div>
@@ -45,9 +60,9 @@
                 </div>
 
                 <!-- Selected Seats Table -->
-                <div class="card shadow-sm border-0 mb-4 bg-white">
+                <div class="card shadow-sm border-0 mb-4 bg-white rounded-4 overflow-hidden">
                     <div class="card-header bg-light p-3">
-                        <span class="fw-bold text-dark"><i class="fa-solid fa-chair text-primary me-2"></i> Danh Sách Ghế Đã Chọn ({{ count($seats) }} vé)</span>
+                        <span class="fw-bold text-dark font-display"><i class="fa-solid fa-chair text-primary me-2"></i> Danh Sách Ghế Đã Chọn ({{ count($seats) }} vé)</span>
                     </div>
                     <div class="card-body p-0">
                         <div class="table-responsive">
@@ -72,7 +87,7 @@
                                                 {{ $seat->seatZone->type ?? 'STANDARD' }}
                                             </span>
                                         </td>
-                                        <td class="text-end pe-3 fw-bold text-danger">
+                                        <td class="text-end pe-3 fw-bold text-danger tnum">
                                             {{ number_format((float)$seat->price, 0, ',', '.') }} VNĐ
                                         </td>
                                     </tr>
@@ -80,8 +95,8 @@
                                 </tbody>
                                 <tfoot class="table-light">
                                     <tr>
-                                        <td colspan="3" class="ps-3 fw-bold text-dark fs-6">Tổng cộng:</td>
-                                        <td class="text-end pe-3 fw-bold text-danger fs-5">
+                                        <td colspan="3" class="ps-3 fw-bold text-dark fs-6 font-display">Tổng cộng:</td>
+                                        <td class="text-end pe-3 fw-bold text-danger fs-5 font-display tnum">
                                             {{ number_format((float)$totalAmount, 0, ',', '.') }} VNĐ
                                         </td>
                                     </tr>
@@ -92,14 +107,14 @@
                 </div>
 
                 <!-- Payment Methods Card -->
-                <div class="card shadow-sm border-0 mb-4 bg-white">
+                <div class="card shadow-sm border-0 mb-4 bg-white rounded-4 overflow-hidden">
                     <div class="card-header bg-light p-3">
-                        <span class="fw-bold text-dark"><i class="fa-solid fa-wallet text-success me-2"></i> Chọn Phương Thức Thanh Toán</span>
+                        <span class="fw-bold text-dark font-display"><i class="fa-solid fa-wallet text-success me-2"></i> Chọn Phương Thức Thanh Toán</span>
                     </div>
                     <div class="card-body p-4">
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <label class="card p-3 border rounded cursor-pointer h-100 d-flex flex-row align-items-center gap-3">
+                                <label class="card p-3 border rounded-3 cursor-pointer h-100 d-flex flex-row align-items-center gap-3" style="cursor: pointer;">
                                     <input type="radio" name="payment_method" value="VNPAY" checked class="form-check-input mt-0">
                                     <div>
                                         <div class="fw-bold text-dark"><i class="fa-solid fa-qrcode text-danger me-1"></i> VNPAY (QR Code)</div>
@@ -109,7 +124,7 @@
                             </div>
 
                             <div class="col-md-6">
-                                <label class="card p-3 border rounded cursor-pointer h-100 d-flex flex-row align-items-center gap-3">
+                                <label class="card p-3 border rounded-3 cursor-pointer h-100 d-flex flex-row align-items-center gap-3" style="cursor: pointer;">
                                     <input type="radio" name="payment_method" value="MOMO" class="form-check-input mt-0">
                                     <div>
                                         <div class="fw-bold text-dark"><i class="fa-solid fa-mobile-screen-button text-primary me-1"></i> Ví MoMo</div>
@@ -119,7 +134,7 @@
                             </div>
 
                             <div class="col-md-6">
-                                <label class="card p-3 border rounded cursor-pointer h-100 d-flex flex-row align-items-center gap-3">
+                                <label class="card p-3 border rounded-3 cursor-pointer h-100 d-flex flex-row align-items-center gap-3" style="cursor: pointer;">
                                     <input type="radio" name="payment_method" value="CREDIT_CARD" class="form-check-input mt-0">
                                     <div>
                                         <div class="fw-bold text-dark"><i class="fa-regular fa-credit-card text-warning me-1"></i> Thẻ Quốc Tế</div>
@@ -129,7 +144,7 @@
                             </div>
 
                             <div class="col-md-6">
-                                <label class="card p-3 border rounded cursor-pointer h-100 d-flex flex-row align-items-center gap-3">
+                                <label class="card p-3 border rounded-3 cursor-pointer h-100 d-flex flex-row align-items-center gap-3" style="cursor: pointer;">
                                     <input type="radio" name="payment_method" value="BANK_TRANSFER" class="form-check-input mt-0">
                                     <div>
                                         <div class="fw-bold text-dark"><i class="fa-solid fa-building-columns text-info me-1"></i> Chuyển Khoản 24/7</div>
@@ -144,9 +159,9 @@
 
             <!-- Right Column: Order Confirmation Summary -->
             <div class="col-lg-4">
-                <div class="card shadow-sm border-0 sticky-top" style="top: 85px;">
-                    <div class="card-header bg-dark text-white p-3" style="background: #0b132b !important;">
-                        <span class="fw-bold text-warning"><i class="fa-solid fa-user-check me-2"></i> Người Đặt Vé</span>
+                <div class="card shadow-sm border-0 sticky-top rounded-4 overflow-hidden" style="top: 85px;">
+                    <div class="card-header p-3 text-white" style="background: #0b1328 !important; border-bottom: 2px solid #f59e0b;">
+                        <span class="fw-bold text-warning font-display"><i class="fa-solid fa-user-check me-2"></i> Người Đặt Vé</span>
                     </div>
 
                     <div class="card-body p-4">
@@ -173,19 +188,20 @@
                         </div>
 
                         <div class="d-flex justify-content-between mb-3">
-                            <span class="fw-bold text-dark fs-6">Tổng thanh toán:</span>
-                            <span class="fw-bold text-danger fs-5">{{ number_format((float)$totalAmount, 0, ',', '.') }} VNĐ</span>
+                            <span class="fw-bold text-dark fs-6 font-display">Tổng thanh toán:</span>
+                            <span class="fw-bold text-danger fs-5 font-display tnum">{{ number_format((float)$totalAmount, 0, ',', '.') }} VNĐ</span>
                         </div>
 
-                        <div class="alert alert-warning py-2 small mb-3">
-                            <i class="fa-solid fa-lock me-1"></i> Cổng thanh toán mô phỏng sandbox an toàn. Vé sẽ được xuất ngay sau khi xác nhận.
+                        <div class="alert alert-warning py-2 small mb-3 border-0" style="background: #fffbeb; color: #92400e;">
+                            <i class="fa-solid fa-lock me-1"></i> Cổng thanh toán mô phỏng an toàn. Vé sẽ được kích hoạt ngay sau khi bấm xác nhận.
                         </div>
 
-                        <button type="submit" class="btn btn-warning w-100 fw-bold py-2 text-dark shadow-sm">
-                            <i class="fa-solid fa-check-to-slot me-2"></i> Xác Nhận & Thanh Toán
+                        <button type="submit" class="btn btn-wc-gold w-100 py-3 mb-2 shadow">
+                            <i class="fa-solid fa-check"></i>
+                            <span>Xác Nhận & Thanh Toán</span>
                         </button>
 
-                        <a href="{{ url('/matches/' . $match->id) }}" class="btn btn-outline-secondary w-100 btn-sm mt-2">
+                        <a href="{{ url('/matches/' . $match->id) }}" class="btn btn-outline-secondary w-100 btn-sm">
                             <i class="fa-solid fa-arrow-left me-1"></i> Quay lại chọn ghế khác
                         </a>
                     </div>

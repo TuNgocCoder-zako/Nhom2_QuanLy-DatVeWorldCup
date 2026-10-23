@@ -47,6 +47,17 @@ class MatchGame extends Model
 
     public function matchSeats(): HasMany { return $this->hasMany(MatchSeat::class, 'match_id', 'id'); }
     public function tickets(): HasMany { return $this->hasMany(Ticket::class, 'match_id', 'id'); }
+
+    public function getAvailableSeatsCountAttribute(): int
+    {
+        return $this->matchSeats()->where('status', 'AVAILABLE')->count();
+    }
+
+    public function getLowestPriceAttribute(): float
+    {
+        $min = $this->matchSeats()->where('status', 'AVAILABLE')->min('price');
+        return $min ? (float)$min : 1200000.0;
+    }
     public function scopeUpcoming(Builder $query): Builder { return $query->where('status', 'UPCOMING')->where('match_time', '>=', now()); }
     public function scopeLive(Builder $query): Builder { return $query->where('status', 'LIVE'); }
     public function scopeFinished(Builder $query): Builder { return $query->where('status', 'FINISHED'); }

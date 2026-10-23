@@ -6,11 +6,13 @@
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-md-6 col-lg-5">
-            <div class="card shadow-sm border-0 rounded-4 bg-white overflow-hidden">
-                <div class="card-header text-center py-4 text-white" style="background: linear-gradient(135deg, #0b132b 0%, #1c2541 100%); border-bottom: 3px solid #ffb703;">
-                    <i class="fa-solid fa-trophy text-warning fa-2x mb-2"></i>
-                    <h4 class="fw-bold mb-0 text-white">ĐĂNG NHẬP</h4>
-                    <small class="text-light opacity-75">Hệ Thống Đặt Vé FIFA World Cup 2030</small>
+            <div class="card shadow-sm border-0 rounded-4 bg-white overflow-hidden" style="box-shadow: 0 16px 36px rgba(11, 19, 40, 0.08) !important;">
+                <div class="card-header text-center py-4 text-white" style="background: radial-gradient(circle at 50% 20%, rgba(245, 158, 11, 0.2) 0%, transparent 60%), linear-gradient(135deg, #060a17 0%, #0b1328 100%); border-bottom: 3px solid #f59e0b;">
+                    <div class="wc-brand-trophy mx-auto mb-2" style="width: 46px; height: 46px; font-size: 1.3rem;">
+                        <i class="fa-solid fa-trophy"></i>
+                    </div>
+                    <h3 class="font-display fw-bold mb-0 text-white fs-4">ĐĂNG NHẬP</h3>
+                    <small class="text-gold text-uppercase fw-semibold" style="letter-spacing: 0.08em; font-size: 0.72rem; color: #f59e0b;">Cổng Đặt Vé FIFA World Cup 2030</small>
                 </div>
 
                 <div class="card-body p-4 p-md-5">
@@ -26,23 +28,24 @@
                             <input type="password" name="password" class="form-control" placeholder="••••••••" required>
                         </div>
 
-                        <button type="submit" class="btn btn-warning w-100 fw-bold py-2 text-dark shadow-sm mb-3">
-                            <i class="fa-solid fa-right-to-bracket me-2"></i> Đăng Nhập
+                        <button type="submit" class="btn btn-wc-gold w-100 py-3 mb-3 shadow">
+                            <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                            <span>Đăng Nhập</span>
                         </button>
 
                         <div class="text-center small text-secondary">
-                            Chưa có tài khoản? <a href="{{ url('/register') }}" class="text-primary fw-bold text-decoration-none">Đăng ký ngay</a>
+                            Chưa có tài khoản? <a href="{{ url('/register') }}" class="text-warning fw-bold text-decoration-none">Đăng ký ngay</a>
                         </div>
                     </form>
 
                     <!-- Demo Credentials Card -->
-                    <div class="mt-4 p-3 bg-light rounded-3 border">
+                    <div class="mt-4 p-3 rounded-3" style="background: #f8fafc; border: 1px dashed #cbd5e1;">
                         <div class="fw-bold text-dark small mb-2"><i class="fa-solid fa-key text-warning me-1"></i> Tài khoản Demo có sẵn:</div>
                         <div class="small text-secondary mb-1">
-                            &bull; <strong>Quản trị viên:</strong> <code>admin@worldcup2030.com</code> | Pass: <code>123456</code>
+                            &bull; <strong>Quản trị viên:</strong> <code class="text-dark bg-white px-2 py-1 rounded">admin@worldcup2030.com</code> | Pass: <code>123456</code>
                         </div>
                         <div class="small text-secondary">
-                            &bull; <strong>Khách hàng:</strong> <code>user@gmail.com</code> | Pass: <code>123456</code>
+                            &bull; <strong>Khách hàng:</strong> <code class="text-dark bg-white px-2 py-1 rounded">user@gmail.com</code> | Pass: <code>123456</code>
                         </div>
                     </div>
                 </div>

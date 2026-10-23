@@ -22,6 +22,23 @@ class Stadium extends Model
 
     protected $casts = ['city_id' => 'integer', 'capacity' => 'integer'];
 
+    public function getImageUrlAttribute(): string
+    {
+        $photos = [
+            'Santiago Bernabeu' => 'https://images.unsplash.com/photo-1577223625816-7546f13df25d?auto=format&fit=crop&w=800&q=80',
+            'Spotify Camp Nou' => 'https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&w=800&q=80',
+            'Estadio La Cartuja' => 'https://images.unsplash.com/photo-1518091043644-c1d4457512c6?auto=format&fit=crop&w=800&q=80',
+            'San Mames' => 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=800&q=80',
+            'Estadio da Luz' => 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=800&q=80',
+            'Estadio do Dragao' => 'https://images.unsplash.com/photo-1486286701208-1d58e9338013?auto=format&fit=crop&w=800&q=80',
+            'Grand Stade de Casablanca' => 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=800&q=80',
+            'Stade Prince Moulay Abdellah' => 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=800&q=80',
+        ];
+
+        $name = $this->stadium_name ?? ($this->name ?? '');
+        return $photos[$name] ?? 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=800&q=80';
+    }
+
     // Sân vận động thuộc về 1 thành phố (@ManyToOne)
     public function city(): BelongsTo
     {

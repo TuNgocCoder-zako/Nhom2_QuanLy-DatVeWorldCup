@@ -6,11 +6,13 @@
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-md-6 col-lg-5">
-            <div class="card shadow-sm border-0 rounded-4 bg-white overflow-hidden">
-                <div class="card-header text-center py-4 text-white" style="background: linear-gradient(135deg, #0b132b 0%, #1c2541 100%); border-bottom: 3px solid #ffb703;">
-                    <i class="fa-solid fa-user-plus text-warning fa-2x mb-2"></i>
-                    <h4 class="fw-bold mb-0 text-white">ĐĂNG KÝ TÀI KHOẢN</h4>
-                    <small class="text-light opacity-75">Tạo tài khoản để đặt vé và nhận vé điện tử nhanh chóng</small>
+            <div class="card shadow-sm border-0 rounded-4 bg-white overflow-hidden" style="box-shadow: 0 16px 36px rgba(11, 19, 40, 0.08) !important;">
+                <div class="card-header text-center py-4 text-white" style="background: radial-gradient(circle at 50% 20%, rgba(245, 158, 11, 0.2) 0%, transparent 60%), linear-gradient(135deg, #060a17 0%, #0b1328 100%); border-bottom: 3px solid #f59e0b;">
+                    <div class="wc-brand-trophy mx-auto mb-2" style="width: 46px; height: 46px; font-size: 1.3rem;">
+                        <i class="fa-solid fa-user-plus"></i>
+                    </div>
+                    <h3 class="font-display fw-bold mb-0 text-white fs-4">ĐĂNG KÝ TÀI KHOẢN</h3>
+                    <small class="text-gold text-uppercase fw-semibold" style="letter-spacing: 0.08em; font-size: 0.72rem; color: #f59e0b;">Khởi tạo tài khoản nhận vé điện tử FIFA</small>
                 </div>
 
                 <div class="card-body p-4 p-md-5">
@@ -36,12 +38,13 @@
                             <input type="password" name="password" class="form-control" placeholder="••••••••" required>
                         </div>
 
-                        <button type="submit" class="btn btn-warning w-100 fw-bold py-2 text-dark shadow-sm mb-3">
-                            <i class="fa-solid fa-check me-1"></i> Hoàn Tất Đăng Ký
+                        <button type="submit" class="btn btn-wc-gold w-100 py-3 mb-3 shadow">
+                            <i class="fa-solid fa-check"></i>
+                            <span>Hoàn Tất Đăng Ký</span>
                         </button>
 
                         <div class="text-center small text-secondary">
-                            Đã có tài khoản? <a href="{{ url('/login') }}" class="text-primary fw-bold text-decoration-none">Đăng nhập</a>
+                            Đã có tài khoản? <a href="{{ url('/login') }}" class="text-warning fw-bold text-decoration-none">Đăng nhập</a>
                         </div>
                     </form>
                 </div>
