@@ -81,14 +81,19 @@
         <!-- Divider -->
         <hr class="border-secondary border-opacity-25 my-4">
 
-        <!-- Bottom Copyright -->
-        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 small text-secondary">
+        <!-- Bottom Copyright & Legal Links -->
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 small text-secondary pt-2">
             <div>
-                &copy; 2030 FIFA World Cup &bull; Phát triển bởi <strong>Nhóm 2</strong>. Mọi quyền được bảo lưu.
+                &copy; 2030 FIFA World Cup&trade; &bull; Bản quyền thuộc về FIFA. Phát triển bởi <strong>Nhóm 2</strong>.
             </div>
-            <div class="d-flex gap-4">
-                <span class="hover-warning">Kiến trúc: Laravel 11 MVC + Service Layer</span>
-                <span class="hover-warning">Database: MariaDB 11.4</span>
+            <div class="d-flex flex-wrap align-items-center gap-3">
+                <a href="{{ url('/') }}" class="text-secondary text-decoration-none hover-gold">Chính sách bảo mật</a>
+                <span class="opacity-50">&bull;</span>
+                <a href="{{ url('/') }}" class="text-secondary text-decoration-none hover-gold">Điều khoản dịch vụ</a>
+                <span class="opacity-50">&bull;</span>
+                <a href="{{ url('/') }}" class="text-secondary text-decoration-none hover-gold">Quy định vé FIFA</a>
+                <span class="opacity-50">&bull;</span>
+                <a href="{{ url('/') }}" class="text-secondary text-decoration-none hover-gold">Cài đặt Cookie</a>
             </div>
         </div>
     </div>

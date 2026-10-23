@@ -771,3 +771,11 @@ textarea:focus-visible {
     box-shadow: var(--wc-shadow-sm);
     margin-bottom: 28px;
 }
+
+.hover-gold, .hover-warning {
+    transition: color 0.2s ease;
+}
+
+.hover-gold:hover, .hover-warning:hover {
+    color: var(--wc-gold) !important;
+}
