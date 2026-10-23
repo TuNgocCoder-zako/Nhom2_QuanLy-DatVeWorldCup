@@ -55,25 +55,13 @@
                 </div>
             </div>
 
-            <!-- Security & Guarantee -->
+            <!-- Support & Contact -->
             <div class="col-lg-3 col-md-6">
-                <h6 class="wc-footer-title">Bảo Mật & Hỗ Trợ</h6>
-                <div class="wc-security-seal mb-3">
-                    <i class="fa-solid fa-shield-halved text-success fs-4"></i>
-                    <div>
-                        <strong class="text-white d-block small">Bảo mật SSL 256-Bit</strong>
-                        <span style="font-size: 0.72rem; color: #94a3b8;">Xác thực mã hóa thanh toán an toàn</span>
-                    </div>
-                </div>
-                <div class="wc-security-seal mb-3">
-                    <i class="fa-solid fa-qrcode text-warning fs-4"></i>
-                    <div>
-                        <strong class="text-white d-block small">Vé Điện Tử E-Ticket QR</strong>
-                        <span style="font-size: 0.72rem; color: #94a3b8;">Gửi email & xuất file PDF ngay tức thì</span>
-                    </div>
-                </div>
-                <div class="small text-secondary">
-                    <i class="fa-solid fa-headset text-warning me-1"></i> Hỗ trợ: <strong class="text-light">support@worldcup2030.com</strong>
+                <h6 class="wc-footer-title">Hỗ Trợ Khách Hàng</h6>
+                <div class="wc-footer-links">
+                    <span class="d-block text-secondary small mb-2"><i class="fa-solid fa-envelope text-warning me-2"></i> support@worldcup2030.com</span>
+                    <span class="d-block text-secondary small mb-2"><i class="fa-solid fa-phone text-warning me-2"></i> Hotline: 1900 2030 (8:00 - 22:00)</span>
+                    <span class="d-block text-secondary small"><i class="fa-solid fa-clock text-warning me-2"></i> Hỗ trợ kỹ thuật trực tuyến 24/7</span>
                 </div>
             </div>
         </div>

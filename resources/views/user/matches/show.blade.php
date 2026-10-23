@@ -36,13 +36,13 @@
 
                     <div class="d-flex align-items-center gap-3 mb-3 flex-wrap">
                         <div class="d-flex align-items-center gap-2">
-                            <img src="{{ $match->homeTeam->flag_url }}" alt="{{ $match->homeTeam->name }}" class="wc-flag-shield mb-0" style="width: 48px; height: 32px;" loading="lazy">
-                            <h2 class="font-display fw-bold text-white mb-0 fs-3">{{ $match->homeTeam->name ?? 'Đội nhà' }}</h2>
+                            <img src="{{ $match->home_team_flag_url }}" alt="{{ $match->home_team_name }}" class="wc-flag-shield mb-0" style="width: 48px; height: 32px;" loading="lazy">
+                            <h2 class="font-display fw-bold text-white mb-0 fs-3">{{ $match->home_team_name }}</h2>
                         </div>
                         <span class="badge bg-light text-dark fw-bold px-3 py-1 fs-6">VS</span>
                         <div class="d-flex align-items-center gap-2">
-                            <img src="{{ $match->awayTeam->flag_url }}" alt="{{ $match->awayTeam->name }}" class="wc-flag-shield mb-0" style="width: 48px; height: 32px;" loading="lazy">
-                            <h2 class="font-display fw-bold text-white mb-0 fs-3">{{ $match->awayTeam->name ?? 'Đội khách' }}</h2>
+                            <img src="{{ $match->away_team_flag_url }}" alt="{{ $match->away_team_name }}" class="wc-flag-shield mb-0" style="width: 48px; height: 32px;" loading="lazy">
+                            <h2 class="font-display fw-bold text-white mb-0 fs-3">{{ $match->away_team_name }}</h2>
                         </div>
                     </div>
 

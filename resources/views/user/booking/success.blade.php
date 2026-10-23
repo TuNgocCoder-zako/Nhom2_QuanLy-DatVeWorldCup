@@ -55,11 +55,11 @@
                     <div class="list-group-item list-group-item-action p-3 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 rounded-3 mb-2 border">
                         <div>
                             <div class="d-flex align-items-center gap-2 mb-1">
-                                <img src="{{ $ticket->match->homeTeam->flag_url }}" alt="" class="wc-flag-shield mb-0" style="width: 28px; height: 18px;">
-                                <strong class="text-dark">{{ $ticket->match->homeTeam->name ?? 'Đội nhà' }}</strong>
+                                <img src="{{ $ticket->match->home_team_flag_url }}" alt="" class="wc-flag-shield mb-0" style="width: 28px; height: 18px;">
+                                <strong class="text-dark">{{ $ticket->match->home_team_name }}</strong>
                                 <span class="badge bg-light text-secondary">VS</span>
-                                <img src="{{ $ticket->match->awayTeam->flag_url }}" alt="" class="wc-flag-shield mb-0" style="width: 28px; height: 18px;">
-                                <strong class="text-dark">{{ $ticket->match->awayTeam->name ?? 'Đội khách' }}</strong>
+                                <img src="{{ $ticket->match->away_team_flag_url }}" alt="" class="wc-flag-shield mb-0" style="width: 28px; height: 18px;">
+                                <strong class="text-dark">{{ $ticket->match->away_team_name }}</strong>
                             </div>
                             <small class="text-muted d-block">
                                 <i class="fa-regular fa-calendar me-1"></i> {{ $ticket->match->match_time ? \Carbon\Carbon::parse($ticket->match->match_time)->format('H:i - d/m/Y') : '' }} &bull;

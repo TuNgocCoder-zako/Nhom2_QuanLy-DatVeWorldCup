@@ -58,6 +58,36 @@ class MatchGame extends Model
         $min = $this->matchSeats()->where('status', 'AVAILABLE')->min('price');
         return $min ? (float)$min : 1200000.0;
     }
+
+    public function getHomeTeamNameAttribute(): string
+    {
+        return $this->homeTeam?->name ?? 'Chờ xác định';
+    }
+
+    public function getAwayTeamNameAttribute(): string
+    {
+        return $this->awayTeam?->name ?? 'Chờ xác định';
+    }
+
+    public function getHomeTeamCodeAttribute(): string
+    {
+        return $this->homeTeam?->code ?? 'TBD';
+    }
+
+    public function getAwayTeamCodeAttribute(): string
+    {
+        return $this->awayTeam?->code ?? 'TBD';
+    }
+
+    public function getHomeTeamFlagUrlAttribute(): string
+    {
+        return $this->homeTeam?->flag_url ?? 'https://flagcdn.com/w80/un.png';
+    }
+
+    public function getAwayTeamFlagUrlAttribute(): string
+    {
+        return $this->awayTeam?->flag_url ?? 'https://flagcdn.com/w80/un.png';
+    }
     public function scopeUpcoming(Builder $query): Builder { return $query->where('status', 'UPCOMING')->where('match_time', '>=', now()); }
     public function scopeLive(Builder $query): Builder { return $query->where('status', 'LIVE'); }
     public function scopeFinished(Builder $query): Builder { return $query->where('status', 'FINISHED'); }

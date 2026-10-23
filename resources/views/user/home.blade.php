@@ -173,9 +173,9 @@
                         <div class="row align-items-center">
                             <!-- Đội nhà -->
                             <div class="col-5 wc-team-col">
-                                <img src="{{ $match->homeTeam->flag_url }}" alt="{{ $match->homeTeam->name }}" class="wc-flag-shield" loading="lazy">
-                                <div class="wc-team-title">{{ $match->homeTeam->name ?? 'Đội nhà' }}</div>
-                                <span class="wc-code-pill">{{ $match->homeTeam->code ?? 'HOM' }}</span>
+                                <img src="{{ $match->home_team_flag_url }}" alt="{{ $match->home_team_name }}" class="wc-flag-shield" loading="lazy">
+                                <div class="wc-team-title">{{ $match->home_team_name }}</div>
+                                <span class="wc-code-pill">{{ $match->home_team_code }}</span>
                             </div>
 
                             <!-- VS / Điểm số trung tâm -->
@@ -194,9 +194,9 @@
 
                             <!-- Đội khách -->
                             <div class="col-5 wc-team-col">
-                                <img src="{{ $match->awayTeam->flag_url }}" alt="{{ $match->awayTeam->name }}" class="wc-flag-shield" loading="lazy">
-                                <div class="wc-team-title">{{ $match->awayTeam->name ?? 'Đội khách' }}</div>
-                                <span class="wc-code-pill">{{ $match->awayTeam->code ?? 'AWA' }}</span>
+                                <img src="{{ $match->away_team_flag_url }}" alt="{{ $match->away_team_name }}" class="wc-flag-shield" loading="lazy">
+                                <div class="wc-team-title">{{ $match->away_team_name }}</div>
+                                <span class="wc-code-pill">{{ $match->away_team_code }}</span>
                             </div>
                         </div>
                     </div>

@@ -35,13 +35,13 @@
                     <div class="card-body p-4">
                         <div class="d-flex align-items-center gap-3 mb-3 flex-wrap">
                             <div class="d-flex align-items-center gap-2">
-                                <img src="{{ $match->homeTeam->flag_url }}" alt="{{ $match->homeTeam->name }}" class="wc-flag-shield mb-0" style="width: 44px; height: 30px;">
-                                <strong class="fs-5 text-dark font-display">{{ $match->homeTeam->name ?? 'Đội nhà' }}</strong>
+                                <img src="{{ $match->home_team_flag_url }}" alt="{{ $match->home_team_name }}" class="wc-flag-shield mb-0" style="width: 44px; height: 30px;">
+                                <strong class="fs-5 text-dark font-display">{{ $match->home_team_name }}</strong>
                             </div>
                             <span class="badge bg-light text-dark fw-bold px-2 py-1">VS</span>
                             <div class="d-flex align-items-center gap-2">
-                                <img src="{{ $match->awayTeam->flag_url }}" alt="{{ $match->awayTeam->name }}" class="wc-flag-shield mb-0" style="width: 44px; height: 30px;">
-                                <strong class="fs-5 text-dark font-display">{{ $match->awayTeam->name ?? 'Đội khách' }}</strong>
+                                <img src="{{ $match->away_team_flag_url }}" alt="{{ $match->away_team_name }}" class="wc-flag-shield mb-0" style="width: 44px; height: 30px;">
+                                <strong class="fs-5 text-dark font-display">{{ $match->away_team_name }}</strong>
                             </div>
                         </div>
 
