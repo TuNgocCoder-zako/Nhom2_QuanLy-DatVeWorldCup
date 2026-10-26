@@ -5,17 +5,18 @@
 
 @section('content')
 <!-- Stat Cards -->
-<div class="row g-3 mb-4">
+<div class="row g-4 mb-4">
     <!-- Doanh thu -->
     <div class="col-xl-3 col-sm-6">
-        <div class="card border-0 shadow-sm rounded-3 bg-white p-3">
+        <div class="admin-card p-4">
             <div class="d-flex align-items-center justify-content-between">
                 <div>
-                    <span class="text-secondary small fw-bold text-uppercase">Tổng doanh thu</span>
-                    <h4 class="fw-bold text-danger mb-0 mt-1">{{ number_format($totalRevenue, 0, ',', '.') }} đ</h4>
+                    <span class="text-secondary small fw-bold text-uppercase" style="letter-spacing: 0.05em; font-size: 0.75rem;">Tổng doanh thu</span>
+                    <h3 class="font-display fw-bold text-danger mb-0 mt-2">{{ number_format($totalRevenue, 0, ',', '.') }} đ</h3>
+                    <small class="text-success fw-medium mt-1 d-block"><i class="fa-solid fa-arrow-trend-up me-1"></i>Từ các đơn vé hợp lệ</small>
                 </div>
-                <div class="p-3 bg-danger bg-opacity-10 text-danger rounded-3">
-                    <i class="fa-solid fa-coins fa-2x"></i>
+                <div class="admin-stat-icon revenue shadow-sm">
+                    <i class="fa-solid fa-coins"></i>
                 </div>
             </div>
         </div>
@@ -23,14 +24,15 @@
 
     <!-- Vé đã bán -->
     <div class="col-xl-3 col-sm-6">
-        <div class="card border-0 shadow-sm rounded-3 bg-white p-3">
+        <div class="admin-card p-4">
             <div class="d-flex align-items-center justify-content-between">
                 <div>
-                    <span class="text-secondary small fw-bold text-uppercase">Vé đã bán ra</span>
-                    <h4 class="fw-bold text-primary mb-0 mt-1">{{ number_format($totalTicketsSold) }} vé</h4>
+                    <span class="text-secondary small fw-bold text-uppercase" style="letter-spacing: 0.05em; font-size: 0.75rem;">Vé đã phát hành</span>
+                    <h3 class="font-display fw-bold text-primary mb-0 mt-2">{{ number_format($totalTicketsSold) }} <span class="fs-6 fw-normal text-muted">vé</span></h3>
+                    <small class="text-primary fw-medium mt-1 d-block"><i class="fa-solid fa-qrcode me-1"></i>Mã định danh FIFA</small>
                 </div>
-                <div class="p-3 bg-primary bg-opacity-10 text-primary rounded-3">
-                    <i class="fa-solid fa-ticket fa-2x"></i>
+                <div class="admin-stat-icon tickets shadow-sm">
+                    <i class="fa-solid fa-ticket"></i>
                 </div>
             </div>
         </div>
@@ -38,14 +40,15 @@
 
     <!-- Số trận đấu -->
     <div class="col-xl-3 col-sm-6">
-        <div class="card border-0 shadow-sm rounded-3 bg-white p-3">
+        <div class="admin-card p-4">
             <div class="d-flex align-items-center justify-content-between">
                 <div>
-                    <span class="text-secondary small fw-bold text-uppercase">Số trận đấu</span>
-                    <h4 class="fw-bold text-success mb-0 mt-1">{{ $totalMatches }} trận</h4>
+                    <span class="text-secondary small fw-bold text-uppercase" style="letter-spacing: 0.05em; font-size: 0.75rem;">Trận đấu tổ chức</span>
+                    <h3 class="font-display fw-bold text-success mb-0 mt-2">{{ $totalMatches }} <span class="fs-6 fw-normal text-muted">trận</span></h3>
+                    <small class="text-success fw-medium mt-1 d-block"><i class="fa-solid fa-landmark me-1"></i>Tại 16 thánh địa</small>
                 </div>
-                <div class="p-3 bg-success bg-opacity-10 text-success rounded-3">
-                    <i class="fa-solid fa-futbol fa-2x"></i>
+                <div class="admin-stat-icon matches shadow-sm">
+                    <i class="fa-solid fa-futbol"></i>
                 </div>
             </div>
         </div>
@@ -53,14 +56,15 @@
 
     <!-- Người dùng -->
     <div class="col-xl-3 col-sm-6">
-        <div class="card border-0 shadow-sm rounded-3 bg-white p-3">
+        <div class="admin-card p-4">
             <div class="d-flex align-items-center justify-content-between">
                 <div>
-                    <span class="text-secondary small fw-bold text-uppercase">Khách hàng</span>
-                    <h4 class="fw-bold text-warning mb-0 mt-1">{{ $totalUsers }} user</h4>
+                    <span class="text-secondary small fw-bold text-uppercase" style="letter-spacing: 0.05em; font-size: 0.75rem;">Tài khoản đăng ký</span>
+                    <h3 class="font-display fw-bold text-warning mb-0 mt-2">{{ $totalUsers }} <span class="fs-6 fw-normal text-muted">user</span></h3>
+                    <small class="text-secondary fw-medium mt-1 d-block"><i class="fa-solid fa-shield-halved me-1"></i>Khách hàng & Admin</small>
                 </div>
-                <div class="p-3 bg-warning bg-opacity-10 text-warning rounded-3">
-                    <i class="fa-solid fa-users fa-2x"></i>
+                <div class="admin-stat-icon users shadow-sm">
+                    <i class="fa-solid fa-users"></i>
                 </div>
             </div>
         </div>
@@ -68,14 +72,17 @@
 </div>
 
 <!-- Revenue Chart Section -->
-<div class="card border-0 shadow-sm rounded-3 mb-4 bg-white">
-    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom">
-        <h6 class="fw-bold mb-0 text-dark">
-            <i class="fa-solid fa-chart-line text-primary me-2"></i> Biểu Đồ Tăng Trưởng Doanh Thu Bán Vé
-        </h6>
-        <div class="btn-group btn-group-sm" role="group">
-            <button type="button" class="btn btn-outline-primary active" id="btnChartDaily">Theo ngày</button>
-            <button type="button" class="btn btn-outline-primary" id="btnChartMonthly">Theo tháng</button>
+<div class="admin-card mb-4">
+    <div class="p-4 d-flex justify-content-between align-items-center border-bottom">
+        <div>
+            <h5 class="font-display fw-bold mb-1 text-dark">
+                <i class="fa-solid fa-chart-line text-warning me-2"></i> Tăng Trưởng Doanh Thu Bán Vé Trực Tuyến
+            </h5>
+            <small class="text-secondary">Dữ liệu doanh thu được tổng hợp thời gian thực theo từng ngày và từng tháng</small>
+        </div>
+        <div class="btn-group btn-group-sm rounded-pill p-1 bg-light border" role="group">
+            <button type="button" class="btn btn-outline-primary rounded-pill px-3 active" id="btnChartDaily">Theo ngày</button>
+            <button type="button" class="btn btn-outline-primary rounded-pill px-3" id="btnChartMonthly">Theo tháng</button>
         </div>
     </div>
     <div class="card-body p-4">
@@ -88,39 +95,43 @@
 <div class="row g-4">
     <!-- Recent Orders -->
     <div class="col-lg-7">
-        <div class="card border-0 shadow-sm rounded-3 bg-white h-100">
-            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom">
-                <h6 class="fw-bold mb-0 text-dark">
+        <div class="admin-card h-100">
+            <div class="p-3 px-4 d-flex justify-content-between align-items-center border-bottom">
+                <h6 class="font-display fw-bold mb-0 text-dark">
                     <i class="fa-solid fa-receipt text-warning me-2"></i> Đơn Hàng Mới Nhất
                 </h6>
-                <a href="{{ url('/admin/orders') }}" class="btn btn-sm btn-link text-decoration-none">Xem tất cả</a>
+                <a href="{{ url('/admin/orders') }}" class="btn btn-sm btn-link text-decoration-none fw-semibold">Xem tất cả &rarr;</a>
             </div>
-            <div class="card-body p-0">
+            <div class="p-0">
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead class="table-light small">
+                    <table class="table admin-table align-middle">
+                        <thead>
                             <tr>
-                                <th class="ps-3">Mã đơn</th>
+                                <th class="ps-4">Mã đơn</th>
                                 <th>Khách hàng</th>
                                 <th>Tổng tiền</th>
                                 <th>Trạng thái</th>
-                                <th class="text-end pe-3">Chi tiết</th>
+                                <th class="text-end pe-4">Chi tiết</th>
                             </tr>
                         </thead>
                         <tbody class="small">
                             @forelse($recentOrders as $order)
                             <tr>
-                                <td class="ps-3 fw-bold">#{{ $order->order_code ?? $order->id }}</td>
+                                <td class="ps-4 fw-bold">#{{ $order->order_code ?? $order->id }}</td>
                                 <td>{{ $order->user->name ?? 'Khách vãng lai' }}</td>
                                 <td class="fw-bold text-danger">{{ number_format((float)($order->total_amount ?? $order->total_price), 0, ',', '.') }} đ</td>
                                 <td>
-                                    <span class="badge {{ $order->status === 'PAID' ? 'bg-success' : ($order->status === 'CANCELLED' ? 'bg-secondary' : 'bg-warning text-dark') }}">
-                                        {{ $order->status }}
-                                    </span>
+                                    @if($order->status === 'PAID')
+                                        <span class="badge badge-pill-modern bg-success bg-opacity-10 text-success border border-success border-opacity-25">ĐÃ THANH TOÁN</span>
+                                    @elseif($order->status === 'CANCELLED')
+                                        <span class="badge badge-pill-modern bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25">ĐÃ HỦY</span>
+                                    @else
+                                        <span class="badge badge-pill-modern bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25">{{ $order->status }}</span>
+                                    @endif
                                 </td>
-                                <td class="text-end pe-3">
-                                    <a href="{{ url('/admin/orders/' . $order->id) }}" class="btn btn-sm btn-light border">
-                                        <i class="fa-solid fa-eye"></i>
+                                <td class="text-end pe-4">
+                                    <a href="{{ url('/admin/orders/' . $order->id) }}" class="btn btn-sm btn-light border btn-action-icon" title="Xem chi tiết đơn">
+                                        <i class="fa-solid fa-eye text-primary"></i>
                                     </a>
                                 </td>
                             </tr>
@@ -138,23 +149,23 @@
 
     <!-- Upcoming Matches -->
     <div class="col-lg-5">
-        <div class="card border-0 shadow-sm rounded-3 bg-white h-100">
-            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom">
-                <h6 class="fw-bold mb-0 text-dark">
+        <div class="admin-card h-100">
+            <div class="p-3 px-4 d-flex justify-content-between align-items-center border-bottom">
+                <h6 class="font-display fw-bold mb-0 text-dark">
                     <i class="fa-solid fa-calendar-day text-success me-2"></i> Trận Đấu Sắp Tới
                 </h6>
-                <a href="{{ url('/admin/matches') }}" class="btn btn-sm btn-link text-decoration-none">Quản lý</a>
+                <a href="{{ url('/admin/matches') }}" class="btn btn-sm btn-link text-decoration-none fw-semibold">Quản lý &rarr;</a>
             </div>
-            <div class="card-body p-0">
+            <div class="p-0">
                 <div class="list-group list-group-flush small">
                     @forelse($upcomingMatches as $match)
-                    <div class="list-group-item p-3">
+                    <div class="list-group-item p-3 px-4 border-bottom">
                         <div class="d-flex justify-content-between align-items-center mb-1">
-                            <span class="badge bg-warning text-dark">Trận #{{ $match->match_number ?? $match->id }}</span>
-                            <span class="text-muted">{{ $match->match_time ? \Carbon\Carbon::parse($match->match_time)->format('H:i - d/m/Y') : '' }}</span>
+                            <span class="badge badge-pill-modern bg-warning bg-opacity-10 text-dark border border-warning border-opacity-25">Trận #{{ $match->match_number ?? $match->id }}</span>
+                            <span class="text-muted"><i class="fa-regular fa-clock me-1"></i>{{ $match->match_time ? \Carbon\Carbon::parse($match->match_time)->format('H:i - d/m/Y') : '' }}</span>
                         </div>
-                        <div class="fw-bold text-dark">
-                            {{ $match->homeTeam->name ?? 'Team A' }} vs {{ $match->awayTeam->name ?? 'Team B' }}
+                        <div class="fw-bold text-dark font-display fs-6 my-1">
+                            {{ $match->home_team_name }} vs {{ $match->away_team_name }}
                         </div>
                         <small class="text-secondary">
                             <i class="fa-solid fa-location-dot text-danger me-1"></i> {{ $match->stadium->stadium_name ?? $match->stadium->name }}
@@ -194,12 +205,14 @@ document.addEventListener('DOMContentLoaded', function () {
                         datasets: [{
                             label: 'Doanh thu (VNĐ)',
                             data: revenues,
-                            borderColor: '#f77f00',
-                            backgroundColor: 'rgba(247, 127, 0, 0.15)',
+                            borderColor: '#f59e0b',
+                            backgroundColor: 'rgba(245, 158, 11, 0.12)',
                             fill: true,
                             tension: 0.35,
                             borderWidth: 3,
-                            pointBackgroundColor: '#0b132b',
+                            pointBackgroundColor: '#070c1a',
+                            pointBorderColor: '#f59e0b',
+                            pointBorderWidth: 2,
                             pointRadius: 5
                         }]
                     },
@@ -219,11 +232,15 @@ document.addEventListener('DOMContentLoaded', function () {
                         scales: {
                             y: {
                                 beginAtZero: true,
+                                grid: { color: 'rgba(0,0,0,0.04)' },
                                 ticks: {
                                     callback: function(value) {
                                         return new Intl.NumberFormat('vi-VN').format(value) + ' đ';
                                     }
                                 }
+                            },
+                            x: {
+                                grid: { display: false }
                             }
                         }
                     }

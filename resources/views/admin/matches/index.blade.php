@@ -4,13 +4,13 @@
 @section('page_title', 'Danh Sách Lịch Thi Đấu & Ghế Ngồi')
 
 @section('content')
-<div class="card border-0 shadow-sm rounded-3 bg-white mb-4">
-    <div class="card-body p-3">
+<div class="admin-card mb-4">
+    <div class="p-3">
         <div class="row g-3 align-items-center justify-content-between">
             <div class="col-md-8">
                 <form action="{{ url('/admin/matches') }}" method="GET" class="row g-2">
                     <div class="col-md-4">
-                        <select name="status" class="form-select form-select-sm">
+                        <select name="status" class="form-select form-select-sm rounded-pill px-3">
                             <option value="">-- Tất cả trạng thái --</option>
                             <option value="UPCOMING" {{ request('status') === 'UPCOMING' ? 'selected' : '' }}>Sắp diễn ra (UPCOMING)</option>
                             <option value="LIVE" {{ request('status') === 'LIVE' ? 'selected' : '' }}>Đang diễn ra (LIVE)</option>
@@ -19,19 +19,19 @@
                         </select>
                     </div>
                     <div class="col-md-4">
-                        <input type="date" name="date" class="form-control form-control-sm" value="{{ request('date') }}">
+                        <input type="date" name="date" class="form-control form-control-sm rounded-pill px-3" value="{{ request('date') }}">
                     </div>
                     <div class="col-md-4 d-flex gap-2">
-                        <button type="submit" class="btn btn-primary btn-sm"><i class="fa-solid fa-filter me-1"></i> Lọc</button>
+                        <button type="submit" class="btn btn-primary btn-sm rounded-pill px-3"><i class="fa-solid fa-filter me-1"></i> Lọc</button>
                         @if(request()->hasAny(['status', 'date']))
-                            <a href="{{ url('/admin/matches') }}" class="btn btn-outline-secondary btn-sm"><i class="fa-solid fa-rotate-left"></i></a>
+                            <a href="{{ url('/admin/matches') }}" class="btn btn-outline-secondary btn-sm rounded-pill"><i class="fa-solid fa-rotate-left"></i></a>
                         @endif
                     </div>
                 </form>
             </div>
 
             <div class="col-md-4 text-md-end">
-                <button type="button" class="btn btn-warning btn-sm fw-bold text-dark" data-bs-toggle="modal" data-bs-target="#createMatchModal">
+                <button type="button" class="btn btn-warning btn-sm fw-bold text-dark rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#createMatchModal">
                     <i class="fa-solid fa-plus me-1"></i> Lập Lịch Trận Mới
                 </button>
             </div>
@@ -39,8 +39,8 @@
     </div>
 </div>
 
-<div class="card border-0 shadow-sm rounded-3 bg-white">
-    <div class="card-body p-0">
+<div class="admin-card">
+    <div class="p-0">
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
                 <thead class="table-light small">
@@ -59,11 +59,11 @@
                     @forelse($matches as $match)
                     <tr>
                         <td class="ps-3 fw-bold text-primary">#{{ $match->match_number ?? $match->id }}</td>
-                        <td><span class="badge bg-secondary">{{ $match->stage ?? 'GROUP' }}</span></td>
-                        <td class="fw-bold text-dark">
-                            {{ $match->homeTeam->name ?? 'Home' }}
+                        <td><span class="badge rounded-pill bg-light text-secondary border px-2 py-1">{{ $match->stage ?? 'GROUP' }}</span></td>
+                        <td class="fw-bold text-dark font-display">
+                            {{ $match->home_team_name }}
                             <span class="text-warning mx-1">vs</span>
-                            {{ $match->awayTeam->name ?? 'Away' }}
+                            {{ $match->away_team_name }}
                         </td>
                         <td>{{ $match->match_time ? \Carbon\Carbon::parse($match->match_time)->format('H:i - d/m/Y') : 'Chưa định' }}</td>
                         <td>{{ $match->stadium->stadium_name ?? $match->stadium->name }}</td>
@@ -75,21 +75,25 @@
                             @endif
                         </td>
                         <td>
-                            <span class="badge {{ $match->status === 'UPCOMING' ? 'bg-primary' : ($match->status === 'LIVE' ? 'bg-danger' : ($match->status === 'FINISHED' ? 'bg-success' : 'bg-secondary')) }}">
-                                {{ $match->status }}
-                            </span>
+                            @if($match->status === 'LIVE')
+                                <span class="badge rounded-pill bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-2 py-1">LIVE</span>
+                            @elseif($match->status === 'FINISHED')
+                                <span class="badge rounded-pill bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25 px-2 py-1">KẾT THÚC</span>
+                            @else
+                                <span class="badge rounded-pill bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1">SẮP ĐẤU</span>
+                            @endif
                         </td>
                         <td class="text-end pe-3">
-                            <a href="{{ url('/matches/' . $match->id) }}" target="_blank" class="btn btn-sm btn-outline-info me-1" title="Xem sơ đồ ghế">
+                            <a href="{{ url('/matches/' . $match->id) }}" target="_blank" class="btn btn-sm btn-outline-info btn-action-icon me-1" title="Xem sơ đồ ghế">
                                 <i class="fa-solid fa-chair"></i>
                             </a>
-                            <button type="button" class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="modal" data-bs-target="#editMatchModal{{ $match->id }}" title="Chỉnh sửa tỷ số/trạng thái">
+                            <button type="button" class="btn btn-sm btn-outline-primary btn-action-icon me-1" data-bs-toggle="modal" data-bs-target="#editMatchModal{{ $match->id }}" title="Chỉnh sửa tỷ số/trạng thái">
                                 <i class="fa-solid fa-pen-to-square"></i>
                             </button>
                             <form action="{{ url('/admin/matches/' . $match->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Bạn có chắc muốn xóa/hủy trận đấu này cùng toàn bộ ghế đã tạo?');">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                <button type="submit" class="btn btn-sm btn-outline-danger btn-action-icon" title="Hủy trận đấu">
                                     <i class="fa-solid fa-trash"></i>
                                 </button>
                             </form>
@@ -123,18 +127,18 @@
                                         </div>
                                         <div class="row g-2 mb-3">
                                             <div class="col-6">
-                                                <label class="form-label small fw-bold">Bàn thắng {{ $match->homeTeam->name ?? 'Home' }}</label>
-                                                <input type="number" name="home_score" class="form-control" value="{{ $match->home_score ?? 0 }}" min="0">
+                                                <label class="form-label small fw-bold">Bàn thắng {{ $match->home_team_name }}</label>
+                                                <input type="number" name="home_score" class="form-control rounded-3" value="{{ $match->home_score ?? 0 }}" min="0">
                                             </div>
                                             <div class="col-6">
-                                                <label class="form-label small fw-bold">Bàn thắng {{ $match->awayTeam->name ?? 'Away' }}</label>
-                                                <input type="number" name="away_score" class="form-control" value="{{ $match->away_score ?? 0 }}" min="0">
+                                                <label class="form-label small fw-bold">Bàn thắng {{ $match->away_team_name }}</label>
+                                                <input type="number" name="away_score" class="form-control rounded-3" value="{{ $match->away_score ?? 0 }}" min="0">
                                             </div>
                                         </div>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Đóng</button>
-                                        <button type="submit" class="btn btn-primary btn-sm">Cập nhật</button>
+                                        <button type="button" class="btn btn-secondary btn-sm rounded-pill px-3" data-bs-dismiss="modal">Đóng</button>
+                                        <button type="submit" class="btn btn-primary btn-sm rounded-pill px-3">Cập nhật</button>
                                     </div>
                                 </form>
                             </div>
