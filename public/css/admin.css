@@ -1,38 +1,246 @@
-/* Custom styles for Admin Dashboard & Management */
+/* ==========================================================================
+   FIFA WORLD CUP 2030 - OFFICIAL ADMIN DASHBOARD STYLESHEET
+   Modern SaaS / Tournament Command Center Theme
+   ========================================================================== */
+
+:root {
+    --admin-bg: #f4f6fa;
+    --admin-card-bg: #ffffff;
+    --admin-text-main: #0f172a;
+    --admin-text-muted: #64748b;
+    --admin-border: rgba(15, 23, 42, 0.08);
+    --admin-gold: #f59e0b;
+    --admin-navy-dark: #070c1a;
+    --admin-navy-sidebar: #0b1328;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-pill: 9999px;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--admin-bg);
+    color: var(--admin-text-main);
+    -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6, .font-display {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    letter-spacing: -0.02em;
+    font-weight: 700;
+}
+
+/* --------------------------------------------------------------------------
+   Sidebar Styling
+   -------------------------------------------------------------------------- */
+.admin-sidebar {
+    width: 260px;
+    min-height: 100vh;
+    background: var(--admin-navy-sidebar) !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    z-index: 1020;
+    transition: all 0.3s ease;
+}
+
+.admin-sidebar-brand {
+    padding: 20px 20px 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+}
+
+.admin-brand-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-pill);
+    background: linear-gradient(135deg, #f59e0b 0%, #b45309 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #060a17;
+    font-size: 1.15rem;
+    box-shadow: 0 0 16px rgba(245, 158, 11, 0.4);
+}
+
+.admin-nav-link {
+    color: #94a3b8 !important;
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 11px 16px !important;
+    border-radius: var(--radius-md) !important;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.2s ease;
+    margin-bottom: 4px;
+}
+
+.admin-nav-link i {
+    font-size: 1.05rem;
+    width: 22px;
+    text-align: center;
+}
+
+.admin-nav-link:hover {
+    color: #ffffff !important;
+    background: rgba(255, 255, 255, 0.06) !important;
+}
+
+.admin-nav-link.active {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+    color: #060a17 !important;
+    font-weight: 700;
+    box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);
+}
+
+/* --------------------------------------------------------------------------
+   Topbar
+   -------------------------------------------------------------------------- */
+.admin-topbar {
+    background: rgba(255, 255, 255, 0.9) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--admin-border);
+    padding: 14px 28px;
+    position: sticky;
+    top: 0;
+    z-index: 1010;
+}
+
+.admin-badge-role {
+    background: rgba(225, 29, 72, 0.1);
+    color: #e11d48;
+    border: 1px solid rgba(225, 29, 72, 0.2);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    padding: 4px 12px;
+    border-radius: var(--radius-pill);
+}
+
+.admin-user-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-pill);
+    background: #0b1328;
+    color: #f59e0b;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.9rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* --------------------------------------------------------------------------
+   Cards (Eliminating Boxy Rounded Squares)
+   -------------------------------------------------------------------------- */
 .admin-card {
-    border-radius: 10px;
-    border: none;
+    background: #ffffff;
+    border-radius: var(--radius-lg) !important;
+    border: 1px solid var(--admin-border) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+    overflow: hidden;
 }
 
 .admin-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08) !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08) !important;
 }
 
+/* Stat Icons - CIRCULAR (Rounded-Circle) replacing clunky square boxes */
 .admin-stat-icon {
-    width: 48px;
-    height: 48px;
-    display: flex;
+    width: 56px;
+    height: 56px;
+    border-radius: var(--radius-pill) !important; /* Perfect circular avatar */
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    border-radius: 8px;
+    font-size: 1.45rem;
+    flex-shrink: 0;
+    transition: transform 0.25s ease;
 }
 
-.table-admin th {
-    font-weight: 600;
-    text-transform: uppercase;
+.admin-card:hover .admin-stat-icon {
+    transform: scale(1.1);
+}
+
+/* Stat icon color variants */
+.admin-stat-icon.revenue {
+    background: rgba(225, 29, 72, 0.1);
+    color: #e11d48;
+}
+
+.admin-stat-icon.tickets {
+    background: rgba(37, 99, 235, 0.1);
+    color: #2563eb;
+}
+
+.admin-stat-icon.matches {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+}
+
+.admin-stat-icon.users {
+    background: rgba(245, 158, 11, 0.12);
+    color: #d97706;
+}
+
+/* --------------------------------------------------------------------------
+   Tables & Badges
+   -------------------------------------------------------------------------- */
+.admin-table {
+    margin-bottom: 0;
+}
+
+.admin-table thead th {
+    font-family: 'Plus Jakarta Sans', sans-serif;
     font-size: 0.75rem;
-    letter-spacing: 0.5px;
-    color: #6c757d;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #64748b;
+    background: #f8fafc;
+    padding: 14px 16px;
+    border-bottom: 1px solid #e2e8f0;
 }
 
-.badge-role-admin {
-    background-color: #dc3545;
-    color: #ffffff;
+.admin-table tbody td {
+    padding: 14px 16px;
+    vertical-align: middle;
+    border-bottom: 1px solid #f1f5f9;
 }
 
-.badge-role-user {
-    background-color: #0d6efd;
-    color: #ffffff;
+.admin-table tbody tr:hover {
+    background-color: #f8fafc;
+}
+
+/* Modern Rounded Pill Badges */
+.badge-pill-modern {
+    border-radius: var(--radius-pill) !important;
+    padding: 5px 12px !important;
+    font-weight: 600;
+    font-size: 0.75rem;
+    letter-spacing: 0.03em;
+}
+
+/* Circular Action Buttons */
+.btn-action-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-pill);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    font-size: 0.82rem;
+    transition: all 0.15s ease;
+}
+
+.btn-action-icon:hover {
+    transform: scale(1.1);
 }

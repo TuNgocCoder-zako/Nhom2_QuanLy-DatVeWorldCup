@@ -45,6 +45,9 @@ class HomeController extends Controller
             ->take(4)
             ->get();
 
-        return view('user.home', compact('hotMatches', 'teamsByGroup', 'featuredStadiums'));
+        $allTeams = Team::query()->orderBy('name')->get();
+        $allStadiums = Stadium::query()->orderBy('name')->get();
+
+        return view('user.home', compact('hotMatches', 'teamsByGroup', 'featuredStadiums', 'allTeams', 'allStadiums'));
     }
 }

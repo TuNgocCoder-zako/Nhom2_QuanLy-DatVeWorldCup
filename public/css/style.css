@@ -1,111 +1,781 @@
+/* ==========================================================================
+   FIFA WORLD CUP 2030 - OFFICIAL DESIGN SYSTEM & STYLESHEET
+   Spain • Portugal • Morocco | Centenary 1930 - 2030
+   Theme: Midnight Stadium Pitch, Centenary Trophy Gold, Iberian Passion
+   ========================================================================== */
+
 :root {
-    --primary-dark: #0b132b;
-    --secondary-dark: #1c2541;
-    --navy-blue: #3a506b;
-    --accent-gold: #ffb703;
-    --accent-orange: #fb8500;
-    --accent-cyan: #48cae4;
-    --status-available: #2ec4b6;
-    --status-selected: #ffb703;
-    --status-booked: #e63946;
+    /* Core Color Tokens (60-30-10 distribution) */
+    --wc-bg-main: #060a17;           /* Deepest pitch backdrop */
+    --wc-bg-surface: #0b1328;        /* Surface / Card navy */
+    --wc-bg-surface-elevated: #111d3d; /* Elevated dropdowns & hovers */
+    --wc-bg-card-light: #ffffff;      /* High-contrast content cards */
+    
+    /* Primary Accent - FIFA Centenary Trophy Gold */
+    --wc-gold: #f59e0b;
+    --wc-gold-hover: #d97706;
+    --wc-gold-light: #fef3c7;
+    --wc-gold-glow: rgba(245, 158, 11, 0.28);
+    
+    /* Secondary & Brand Accents */
+    --wc-crimson: #e11d48;           /* Host passion red / Live indicator */
+    --wc-emerald: #10b981;           /* Pitch grass green / Available seats */
+    --wc-royal: #2563eb;             /* UEFA / Mediterranean blue */
+    --wc-cyan: #06b6d4;              /* Category highlight */
+    
+    /* Neutral & Text Shades */
+    --wc-slate-950: #020617;
+    --wc-slate-900: #0f172a;
+    --wc-slate-800: #1e293b;
+    --wc-slate-700: #334155;
+    --wc-slate-600: #475569;
+    --wc-slate-400: #94a3b8;
+    --wc-slate-300: #cbd5e1;
+    --wc-slate-100: #f1f5f9;
+    --wc-slate-50: #f8fafc;
+    
+    /* Borders & Hairlines */
+    --wc-border-dark: rgba(255, 255, 255, 0.10);
+    --wc-border-light: rgba(15, 23, 42, 0.08);
+    --wc-border-gold: rgba(245, 158, 11, 0.35);
+
+    /* Elevation Shadows */
+    --wc-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08);
+    --wc-shadow-md: 0 4px 14px rgba(0, 0, 0, 0.12);
+    --wc-shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.18);
+    --wc-shadow-gold: 0 8px 24px rgba(245, 158, 11, 0.25);
+    --wc-shadow-card: 0 4px 20px rgba(0, 0, 0, 0.06);
+
+    /* Radii */
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+    --radius-xl: 24px;
+    --radius-pill: 9999px;
 }
 
+/* --------------------------------------------------------------------------
+   Base & Typography
+   -------------------------------------------------------------------------- */
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    color: #2b2d42;
+    color: var(--wc-slate-800);
+    background-color: #f6f8fb;
+    line-height: 1.6;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
-h1, h2, h3, h4, h5, h6, .fw-bold {
-    font-family: 'Montserrat', sans-serif;
+h1, h2, h3, h4, h5, h6, .font-display {
+    font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    color: var(--wc-slate-900);
 }
 
-/* Hero Section */
-.hero-section {
-    background: linear-gradient(135deg, rgba(11, 19, 43, 0.95) 0%, rgba(28, 37, 65, 0.92) 100%),
-                url('https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat;
-    color: #ffffff;
-    padding: 70px 0;
-    border-bottom: 3px solid var(--accent-gold);
+.tnum {
+    font-feature-settings: 'tnum' on, 'lnum' on;
 }
 
-.hero-title {
-    font-size: 2.8rem;
+/* Accessibility Focus States (Vercel Guidelines compliant) */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: 2px solid var(--wc-gold) !important;
+    outline-offset: 2px !important;
+    box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.35) !important;
+}
+
+/* Respect Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+    *, ::before, ::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   Header & Navigation
+   -------------------------------------------------------------------------- */
+.wc-navbar {
+    background: rgba(6, 10, 23, 0.92) !important;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    transition: background 0.3s ease;
+    z-index: 1040;
+}
+
+.wc-brand {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 1.25rem;
     font-weight: 800;
+    letter-spacing: -0.02em;
+    color: #ffffff !important;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.wc-brand-trophy {
+    width: 38px;
+    height: 38px;
+    border-radius: var(--radius-md);
+    background: linear-gradient(135deg, #f59e0b 0%, #b45309 100%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #060a17;
+    font-size: 1.15rem;
+    box-shadow: 0 0 16px rgba(245, 158, 11, 0.45);
+}
+
+.wc-nav-link {
+    color: #cbd5e1 !important;
+    font-weight: 600;
+    font-size: 0.93rem;
+    padding: 8px 14px !important;
+    border-radius: var(--radius-sm);
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.wc-nav-link:hover {
+    color: #ffffff !important;
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.wc-nav-link.active {
+    color: var(--wc-gold) !important;
+    background: rgba(245, 158, 11, 0.12);
+}
+
+.wc-host-pill {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: var(--radius-pill);
+    padding: 4px 12px;
+    font-size: 0.78rem;
+    color: #cbd5e1;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* --------------------------------------------------------------------------
+   Hero Section
+   -------------------------------------------------------------------------- */
+.wc-hero {
+    position: relative;
+    background: 
+        radial-gradient(circle at 50% 15%, rgba(245, 158, 11, 0.16) 0%, transparent 55%),
+        radial-gradient(circle at 15% 75%, rgba(37, 99, 235, 0.14) 0%, transparent 45%),
+        radial-gradient(circle at 85% 80%, rgba(225, 29, 72, 0.14) 0%, transparent 45%),
+        linear-gradient(180deg, #060a17 0%, #0b1328 100%);
+    color: #ffffff;
+    padding: 75px 0 65px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    overflow: hidden;
+}
+
+.wc-hero-badge {
+    background: rgba(245, 158, 11, 0.14);
+    border: 1px solid rgba(245, 158, 11, 0.35);
+    color: var(--wc-gold);
+    font-size: 0.8rem;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    background: linear-gradient(90deg, #ffffff, var(--accent-gold));
+    letter-spacing: 0.08em;
+    padding: 7px 16px;
+    border-radius: var(--radius-pill);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.wc-hero-title {
+    font-size: 3.25rem;
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    color: #ffffff;
+    margin-top: 16px;
+    margin-bottom: 18px;
+}
+
+.wc-hero-title .text-gold {
+    background: linear-gradient(135deg, #ffffff 0%, #fef08a 40%, #f59e0b 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
-/* Match Cards */
-.match-card {
-    border: none;
-    border-radius: 12px;
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
-    background: #ffffff;
-    overflow: hidden;
+.wc-hero-sub {
+    font-size: 1.125rem;
+    color: #94a3b8;
+    max-width: 680px;
+    margin: 0 auto 32px;
 }
 
-.match-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08) !important;
+/* Centenary Countdown Clock */
+.wc-countdown-grid {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin: 28px auto 36px;
+    max-width: 460px;
 }
 
-.match-header {
-    background-color: var(--secondary-dark);
+.wc-countdown-box {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: var(--radius-md);
+    padding: 10px 14px;
+    min-width: 80px;
+    text-align: center;
+    backdrop-filter: blur(8px);
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.wc-countdown-box:hover {
+    transform: translateY(-2px);
+    border-color: var(--wc-gold);
+}
+
+.wc-countdown-num {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--wc-gold);
+    line-height: 1.1;
+    font-feature-settings: 'tnum' on, 'lnum' on;
+}
+
+.wc-countdown-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #94a3b8;
+    margin-top: 2px;
+}
+
+/* Quick Search Dock in Hero */
+.wc-hero-search-card {
+    background: rgba(17, 29, 61, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: var(--radius-lg);
+    padding: 20px 24px;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+    max-width: 980px;
+    margin: 0 auto;
+}
+
+.wc-search-input-group label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #cbd5e1;
+    margin-bottom: 6px;
+}
+
+.wc-search-input-group .form-control,
+.wc-search-input-group .form-select {
+    background-color: rgba(6, 10, 23, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     color: #ffffff;
-    padding: 10px 16px;
-    font-size: 0.85rem;
+    font-size: 0.9rem;
+    border-radius: var(--radius-md);
+    padding: 10px 14px;
 }
 
-.team-flag {
-    width: 48px;
-    height: 32px;
+.wc-search-input-group .form-control:focus,
+.wc-search-input-group .form-select:focus {
+    background-color: #060a17;
+    border-color: var(--wc-gold);
+    color: #ffffff;
+}
+
+.wc-search-input-group select option {
+    background-color: #0b1328;
+    color: #ffffff;
+}
+
+/* --------------------------------------------------------------------------
+   Tournament Metrics Bar
+   -------------------------------------------------------------------------- */
+.wc-metrics-bar {
+    background: #090f20;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    padding: 24px 0;
+}
+
+.wc-metric-item {
+    text-align: center;
+    padding: 8px 16px;
+}
+
+.wc-metric-value {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    color: #ffffff;
+    line-height: 1;
+    margin-bottom: 4px;
+}
+
+.wc-metric-label {
+    font-size: 0.82rem;
+    color: #94a3b8;
+    font-weight: 500;
+}
+
+/* --------------------------------------------------------------------------
+   Broadcast Match Cards (FIFA Official Style)
+   -------------------------------------------------------------------------- */
+.wc-match-card {
+    background: #ffffff;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--wc-shadow-card);
+    transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.wc-match-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 32px rgba(11, 19, 40, 0.12);
+    border-color: rgba(245, 158, 11, 0.4);
+}
+
+.wc-match-header {
+    background: #0b1328;
+    color: #ffffff;
+    padding: 12px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.wc-match-badge-stage {
+    background: rgba(245, 158, 11, 0.18);
+    color: var(--wc-gold);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 4px 10px;
+    border-radius: var(--radius-pill);
+}
+
+.wc-match-time-tag {
+    font-size: 0.82rem;
+    color: #cbd5e1;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.wc-match-body {
+    padding: 24px 20px;
+    flex-grow: 1;
+}
+
+.wc-team-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.wc-flag-shield {
+    width: 64px;
+    height: 44px;
+    border-radius: 8px;
     object-fit: cover;
-    border-radius: 4px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.16);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    margin-bottom: 10px;
+    transition: transform 0.2s ease;
 }
 
-.team-name {
+.wc-match-card:hover .wc-flag-shield {
+    transform: scale(1.06);
+}
+
+.wc-team-title {
+    font-family: 'Plus Jakarta Sans', sans-serif;
     font-weight: 700;
     font-size: 1.05rem;
+    color: var(--wc-slate-900);
+    margin-bottom: 4px;
+    line-height: 1.25;
 }
 
-.vs-badge {
-    background-color: #f1f3f5;
-    color: var(--primary-dark);
+.wc-code-pill {
+    background: var(--wc-slate-100);
+    color: var(--wc-slate-600);
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+    letter-spacing: 0.05em;
+}
+
+.wc-vs-box {
+    text-align: center;
+}
+
+.wc-vs-badge {
+    background: #f1f5f9;
+    color: #475569;
     font-weight: 800;
     font-size: 0.85rem;
-    padding: 6px 12px;
-    border-radius: 20px;
-    border: 1px solid #dee2e6;
+    letter-spacing: 0.05em;
+    padding: 7px 14px;
+    border-radius: var(--radius-pill);
+    border: 1px solid #e2e8f0;
+    display: inline-block;
 }
 
-/* Hover Utilities */
-.hover-warning:hover {
-    color: var(--accent-gold) !important;
+.wc-score-badge {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--wc-crimson);
+    letter-spacing: 2px;
 }
 
-/* Custom Buttons */
-.btn-gold {
-    background-color: var(--accent-gold);
-    color: #0b132b;
+.wc-match-footer {
+    background: #fafbfd;
+    border-top: 1px solid #f1f5f9;
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.wc-match-venue {
+    font-size: 0.82rem;
+    color: var(--wc-slate-600);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.wc-seats-avail {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--wc-emerald);
+    background: #ecfdf5;
+    padding: 3px 8px;
+    border-radius: var(--radius-sm);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* --------------------------------------------------------------------------
+   Buttons & CTAs
+   -------------------------------------------------------------------------- */
+.btn-wc-gold {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: #060a17 !important;
     font-weight: 700;
+    font-size: 0.92rem;
     border: none;
-    transition: all 0.2s;
+    border-radius: var(--radius-md);
+    padding: 10px 22px;
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
 }
 
-.btn-gold:hover {
-    background-color: var(--accent-orange);
+.btn-wc-gold:hover {
+    background: linear-gradient(135deg, #fbbf24 0%, #ea580c 100%);
+    box-shadow: 0 6px 18px rgba(245, 158, 11, 0.45);
+    transform: translateY(-1px);
+    color: #000000 !important;
+}
+
+.btn-wc-gold:active {
+    transform: translateY(0);
+}
+
+.btn-wc-outline-light {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #ffffff !important;
+    font-weight: 600;
+    font-size: 0.92rem;
+    border-radius: var(--radius-md);
+    padding: 10px 20px;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-wc-outline-light:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: #ffffff;
+}
+
+/* --------------------------------------------------------------------------
+   Groups Standings Cards (12 Groups)
+   -------------------------------------------------------------------------- */
+.wc-group-card {
+    background: #ffffff;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    box-shadow: var(--wc-shadow-sm);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.wc-group-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--wc-shadow-md);
+}
+
+.wc-group-header {
+    background: #0b1328;
     color: #ffffff;
+    padding: 10px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-/* Group Standings Table */
-.group-header {
-    background: var(--secondary-dark);
-    color: var(--accent-gold);
+.wc-group-name {
+    font-family: 'Plus Jakarta Sans', sans-serif;
     font-weight: 700;
-    padding: 8px 12px;
-    border-radius: 6px 6px 0 0;
+    font-size: 0.95rem;
+    color: var(--wc-gold);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.wc-team-row {
+    padding: 9px 14px;
+    border-bottom: 1px solid #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.88rem;
+    transition: background 0.15s ease;
+}
+
+.wc-team-row:last-child {
+    border-bottom: none;
+}
+
+.wc-team-row:hover {
+    background: #f8fafc;
+}
+
+.wc-mini-flag {
+    width: 24px;
+    height: 16px;
+    border-radius: 3px;
+    object-fit: cover;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+}
+
+/* --------------------------------------------------------------------------
+   Stadium Showcase Cards
+   -------------------------------------------------------------------------- */
+.wc-stadium-card {
+    background: #ffffff;
+    border-radius: var(--radius-lg);
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    overflow: hidden;
+    box-shadow: var(--wc-shadow-card);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.wc-stadium-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--wc-shadow-lg);
+}
+
+.wc-stadium-img-wrapper {
+    position: relative;
+    height: 190px;
+    overflow: hidden;
+    background: #0b1328;
+}
+
+.wc-stadium-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.wc-stadium-card:hover .wc-stadium-img {
+    transform: scale(1.08);
+}
+
+.wc-stadium-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 12px 16px;
+    background: linear-gradient(180deg, transparent 0%, rgba(6, 10, 23, 0.85) 100%);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.wc-stadium-cap-badge {
+    background: rgba(245, 158, 11, 0.9);
+    color: #060a17;
+    font-weight: 700;
+    font-size: 0.75rem;
+    padding: 3px 10px;
+    border-radius: var(--radius-pill);
+}
+
+.wc-stadium-content {
+    padding: 18px 20px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.wc-stadium-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: var(--wc-slate-900);
+}
+
+.wc-stadium-loc {
+    font-size: 0.85rem;
+    color: var(--wc-slate-600);
+    margin-bottom: 12px;
+}
+
+/* --------------------------------------------------------------------------
+   Value Props & Service Badges
+   -------------------------------------------------------------------------- */
+.wc-prop-card {
+    background: #ffffff;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    border-radius: var(--radius-lg);
+    padding: 28px 24px;
+    text-align: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    height: 100%;
+}
+
+.wc-prop-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--wc-shadow-md);
+}
+
+.wc-prop-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: var(--radius-lg);
+    background: rgba(245, 158, 11, 0.12);
+    color: var(--wc-gold-hover);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-bottom: 16px;
+}
+
+/* --------------------------------------------------------------------------
+   Footer
+   -------------------------------------------------------------------------- */
+.wc-footer {
+    background: #060a17;
+    color: #94a3b8;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 60px 0 30px;
+    margin-top: auto;
+}
+
+.wc-footer-title {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 1rem;
+    margin-bottom: 18px;
+    letter-spacing: -0.01em;
+}
+
+.wc-footer-links a {
+    color: #94a3b8;
+    text-decoration: none;
+    font-size: 0.88rem;
+    display: inline-block;
+    margin-bottom: 10px;
+    transition: color 0.2s ease;
+}
+
+.wc-footer-links a:hover {
+    color: var(--wc-gold);
+}
+
+.wc-security-seal {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius-md);
+    padding: 12px 16px;
+    font-size: 0.82rem;
+    color: #cbd5e1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* --------------------------------------------------------------------------
+   Filter & Search Toolbar
+   -------------------------------------------------------------------------- */
+.wc-filter-toolbar {
+    background: #ffffff;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    border-radius: var(--radius-lg);
+    padding: 20px 24px;
+    box-shadow: var(--wc-shadow-sm);
+    margin-bottom: 28px;
+}
+
+.hover-gold, .hover-warning {
+    transition: color 0.2s ease;
+}
+
+.hover-gold:hover, .hover-warning:hover {
+    color: var(--wc-gold) !important;
 }

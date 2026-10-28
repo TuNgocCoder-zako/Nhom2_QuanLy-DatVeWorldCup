@@ -1,52 +1,88 @@
-<footer class="bg-dark text-light pt-5 pb-3 mt-auto" style="background-color: #0b132b !important; border-top: 1px solid rgba(255,255,255,0.1);">
+<footer class="wc-footer">
     <div class="container">
-        <div class="row g-4">
+        <!-- Main Footer Row -->
+        <div class="row g-4 mb-5">
+            <!-- Brand & Host Countries -->
             <div class="col-lg-4 col-md-6">
-                <h5 class="fw-bold text-warning mb-3">
-                    <i class="fa-solid fa-trophy me-2"></i>FIFA WORLD CUP 2030
-                </h5>
-                <p class="text-secondary small">
-                    Hệ thống đặt vé và quản lý trực tuyến giải vô địch bóng đá thế giới FIFA World Cup 2030 tại Tây Ban Nha, Bồ Đào Nha và Ma-rốc.
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <span class="wc-brand-trophy" aria-hidden="true">
+                        <i class="fa-solid fa-trophy"></i>
+                    </span>
+                    <div>
+                        <h5 class="fw-bold text-white mb-0 font-display">FIFA WORLD CUP 2030</h5>
+                        <small class="text-gold text-uppercase fw-semibold" style="letter-spacing: 0.1em; font-size: 0.72rem; color: #f59e0b;">
+                            Centenary 1930 &bull; 2030
+                        </small>
+                    </div>
+                </div>
+                <p class="small text-secondary mb-3">
+                    Hệ thống đặt vé và quản lý trực tuyến giải vô địch bóng đá thế giới FIFA World Cup 2030. Lần đầu tiên trong lịch sử ngày hội bóng đá lớn nhất hành tinh được tổ chức tại 3 châu lục với 6 quốc gia tham gia khai mạc.
                 </p>
-                <div class="d-flex gap-2">
-                    <span class="badge bg-primary">Tây Ban Nha</span>
-                    <span class="badge bg-danger">Bồ Đào Nha</span>
-                    <span class="badge bg-success">Ma-rốc</span>
+                <div class="d-flex flex-wrap gap-2">
+                    <span class="badge bg-dark border border-secondary border-opacity-50 text-light px-2 py-1">
+                        <img src="https://flagcdn.com/w20/es.png" alt="ES" style="width: 14px; height: 10px; margin-right: 4px;"> Tây Ban Nha
+                    </span>
+                    <span class="badge bg-dark border border-secondary border-opacity-50 text-light px-2 py-1">
+                        <img src="https://flagcdn.com/w20/pt.png" alt="PT" style="width: 14px; height: 10px; margin-right: 4px;"> Bồ Đào Nha
+                    </span>
+                    <span class="badge bg-dark border border-secondary border-opacity-50 text-light px-2 py-1">
+                        <img src="https://flagcdn.com/w20/ma.png" alt="MA" style="width: 14px; height: 10px; margin-right: 4px;"> Ma-rốc
+                    </span>
                 </div>
             </div>
 
-            <div class="col-lg-2 col-md-6">
-                <h6 class="fw-bold text-white mb-3">Liên kết nhanh</h6>
-                <ul class="list-unstyled small">
-                    <li class="mb-2"><a href="{{ url('/') }}" class="text-secondary text-decoration-none hover-warning">Trang chủ</a></li>
-                    <li class="mb-2"><a href="{{ url('/matches') }}" class="text-secondary text-decoration-none hover-warning">Lịch thi đấu</a></li>
-                    <li class="mb-2"><a href="{{ url('/my-tickets') }}" class="text-secondary text-decoration-none hover-warning">Tra cứu vé</a></li>
-                </ul>
+            <!-- Quick Links -->
+            <div class="col-lg-2 col-md-6 col-sm-6">
+                <h6 class="wc-footer-title">Khám Phá</h6>
+                <div class="wc-footer-links">
+                    <a href="{{ url('/') }}"><i class="fa-solid fa-angle-right me-1 text-warning small"></i> Trang chủ</a>
+                    <a href="{{ url('/matches') }}"><i class="fa-solid fa-angle-right me-1 text-warning small"></i> Lịch thi đấu</a>
+                    <a href="{{ url('/matches') }}"><i class="fa-solid fa-angle-right me-1 text-warning small"></i> Đặt vé trực tuyến</a>
+                    <a href="{{ url('/#groups-section') }}"><i class="fa-solid fa-angle-right me-1 text-warning small"></i> Bảng đấu A - L</a>
+                    <a href="{{ url('/my-tickets') }}"><i class="fa-solid fa-angle-right me-1 text-warning small"></i> Tra cứu vé đã đặt</a>
+                </div>
             </div>
 
-            <div class="col-lg-3 col-md-6">
-                <h6 class="fw-bold text-white mb-3">Hỗ trợ khách hàng</h6>
-                <ul class="list-unstyled small text-secondary">
-                    <li class="mb-2"><i class="fa-solid fa-envelope me-2 text-warning"></i>support@worldcup2030.com</li>
-                    <li class="mb-2"><i class="fa-solid fa-phone me-2 text-warning"></i>1900 2030 (8:00 - 22:00)</li>
-                    <li class="mb-2"><i class="fa-solid fa-shield-halved me-2 text-warning"></i>Thanh toán bảo mật SSL 256-bit</li>
-                </ul>
+            <!-- Host Stadiums & Cities -->
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <h6 class="wc-footer-title">Thánh Địa Đăng Cai</h6>
+                <div class="wc-footer-links">
+                    <span class="d-block text-secondary small mb-2"><i class="fa-solid fa-location-dot text-danger me-1"></i> Santiago Bernabéu (Madrid)</span>
+                    <span class="d-block text-secondary small mb-2"><i class="fa-solid fa-location-dot text-danger me-1"></i> Spotify Camp Nou (Barcelona)</span>
+                    <span class="d-block text-secondary small mb-2"><i class="fa-solid fa-location-dot text-danger me-1"></i> Estádio da Luz (Lisbon)</span>
+                    <span class="d-block text-secondary small mb-2"><i class="fa-solid fa-location-dot text-danger me-1"></i> Grand Stade de Casablanca</span>
+                    <span class="d-block text-secondary small"><i class="fa-solid fa-location-dot text-danger me-1"></i> San Mamés (Bilbao)</span>
+                </div>
             </div>
 
+            <!-- Support & Contact -->
             <div class="col-lg-3 col-md-6">
-                <h6 class="fw-bold text-white mb-3">Dự án Nhóm 2</h6>
-                <p class="text-secondary small">
-                    Bài tập lớn học phần Lập trình Web PHP / Laravel.<br>
-                    Kiến trúc: MVC + Service Layer, MariaDB 11.4.
-                </p>
+                <h6 class="wc-footer-title">Hỗ Trợ Khách Hàng</h6>
+                <div class="wc-footer-links">
+                    <span class="d-block text-secondary small mb-2"><i class="fa-solid fa-envelope text-warning me-2"></i> support@worldcup2030.com</span>
+                    <span class="d-block text-secondary small mb-2"><i class="fa-solid fa-phone text-warning me-2"></i> Hotline: 1900 2030 (8:00 - 22:00)</span>
+                    <span class="d-block text-secondary small"><i class="fa-solid fa-clock text-warning me-2"></i> Hỗ trợ kỹ thuật trực tuyến 24/7</span>
+                </div>
             </div>
         </div>
 
-        <hr class="my-4 border-secondary opacity-25">
+        <!-- Divider -->
+        <hr class="border-secondary border-opacity-25 my-4">
 
-        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center text-secondary small">
-            <div>&copy; 2030 FIFA World Cup &bull; Nhóm 2. All rights reserved.</div>
-            <div>Bảo mật &bull; Điều khoản sử dụng</div>
+        <!-- Bottom Copyright & Legal Links -->
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 small text-secondary pt-2">
+            <div>
+                &copy; 2030 FIFA World Cup&trade; &bull; Bản quyền thuộc về FIFA. Phát triển bởi <strong>Nhóm 2</strong>.
+            </div>
+            <div class="d-flex flex-wrap align-items-center gap-3">
+                <a href="{{ url('/') }}" class="text-secondary text-decoration-none hover-gold">Chính sách bảo mật</a>
+                <span class="opacity-50">&bull;</span>
+                <a href="{{ url('/') }}" class="text-secondary text-decoration-none hover-gold">Điều khoản dịch vụ</a>
+                <span class="opacity-50">&bull;</span>
+                <a href="{{ url('/') }}" class="text-secondary text-decoration-none hover-gold">Quy định vé FIFA</a>
+                <span class="opacity-50">&bull;</span>
+                <a href="{{ url('/') }}" class="text-secondary text-decoration-none hover-gold">Cài đặt Cookie</a>
+            </div>
         </div>
     </div>
 </footer>

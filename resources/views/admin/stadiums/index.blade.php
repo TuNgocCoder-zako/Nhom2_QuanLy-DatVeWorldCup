@@ -4,38 +4,38 @@
 @section('page_title', 'Danh Sách Sân Vận Động Đăng Cai')
 
 @section('content')
-<div class="card border-0 shadow-sm rounded-3 bg-white mb-4">
-    <div class="card-body p-3 d-flex justify-content-between align-items-center">
+<div class="admin-card mb-4">
+    <div class="p-4 d-flex justify-content-between align-items-center">
         <div>
-            <h6 class="fw-bold mb-0 text-dark"><i class="fa-solid fa-landmark text-primary me-2"></i> Các sân vận động tổ chức World Cup 2030</h6>
+            <h6 class="font-display fw-bold mb-1 text-dark"><i class="fa-solid fa-landmark text-warning me-2"></i> Các Sân Vận Động Tổ Chức World Cup 2030</h6>
             <small class="text-secondary">Mỗi sân được tự động phân bổ 4 khu vực khán đài tiêu chuẩn A, B, C, D</small>
         </div>
-        <button type="button" class="btn btn-warning btn-sm fw-bold text-dark" data-bs-toggle="modal" data-bs-target="#createStadiumModal">
+        <button type="button" class="btn btn-warning btn-sm fw-bold text-dark rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#createStadiumModal">
             <i class="fa-solid fa-plus me-1"></i> Thêm Sân Vận Động
         </button>
     </div>
 </div>
 
-<div class="card border-0 shadow-sm rounded-3 bg-white">
-    <div class="card-body p-0">
+<div class="admin-card">
+    <div class="p-0">
         <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-                <thead class="table-light small">
+            <table class="table admin-table align-middle">
+                <thead>
                     <tr>
-                        <th class="ps-3">ID</th>
+                        <th class="ps-4">ID</th>
                         <th>Tên sân vận động</th>
                         <th>Thành phố & Địa điểm</th>
                         <th>Sức chứa</th>
                         <th>Khu vực ghế</th>
-                        <th class="text-end pe-3">Thao tác</th>
+                        <th class="text-end pe-4">Thao tác</th>
                     </tr>
                 </thead>
                 <tbody class="small">
                     @forelse($stadiums as $stadium)
                     <tr>
-                        <td class="ps-3 fw-bold text-muted">{{ $stadium->id }}</td>
-                        <td class="fw-bold text-dark">
-                            <i class="fa-solid fa-building-columns text-warning me-1"></i>
+                        <td class="ps-4 fw-bold text-muted">{{ $stadium->id }}</td>
+                        <td class="fw-bold text-dark font-display">
+                            <i class="fa-solid fa-building-columns text-warning me-2"></i>
                             {{ $stadium->stadium_name ?? $stadium->name }}
                         </td>
                         <td>
@@ -43,19 +43,19 @@
                             {{ $stadium->location ?? 'Tây Ban Nha' }}
                         </td>
                         <td>
-                            <span class="badge bg-secondary">{{ number_format((int)$stadium->capacity) }} chỗ</span>
+                            <span class="badge rounded-pill bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25">{{ number_format((int)$stadium->capacity) }} chỗ</span>
                         </td>
                         <td>
-                            <span class="badge bg-info text-dark">{{ $stadium->seatZones->count() }} khu vực</span>
+                            <span class="badge rounded-pill bg-info bg-opacity-10 text-info border border-info border-opacity-25">{{ $stadium->seatZones->count() }} khu vực</span>
                         </td>
-                        <td class="text-end pe-3">
-                            <button type="button" class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="modal" data-bs-target="#editStadiumModal{{ $stadium->id }}">
+                        <td class="text-end pe-4">
+                            <button type="button" class="btn btn-sm btn-outline-primary btn-action-icon me-1" data-bs-toggle="modal" data-bs-target="#editStadiumModal{{ $stadium->id }}" title="Chỉnh sửa">
                                 <i class="fa-solid fa-pen-to-square"></i>
                             </button>
                             <form action="{{ url('/admin/stadiums/' . $stadium->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Bạn có chắc muốn xóa sân này?');">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                <button type="submit" class="btn btn-sm btn-outline-danger btn-action-icon" title="Xóa">
                                     <i class="fa-solid fa-trash"></i>
                                 </button>
                             </form>
