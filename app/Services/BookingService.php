@@ -67,7 +67,7 @@ class BookingService
         $seatInserts = [];
         foreach ($zones as $zone) {
             $isVip = strtoupper($zone->type) === 'VIP';
-            $basePrice = $zone->base_price ?: ($isVip ? 500 : 150);
+            $basePrice = $zone->base_price ?: ($isVip ? 8500000 : 2500000);
 
             if ($isVip) {
                 // 2 blocks x 2 rows x 15 ghế = 60 ghế VIP
