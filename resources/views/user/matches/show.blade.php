@@ -67,7 +67,10 @@
     <div class="row g-4">
         <!-- Interactive Seat Map Column -->
         <div class="col-lg-8">
-            <div class="stadium-container" id="seatMapContainer" data-match-id="{{ $match->id }}">
+            <div class="stadium-container" id="seatMapContainer" 
+                 data-match-id="{{ $match->id }}"
+                 data-seats-url="{{ url('/api/matches/' . $match->id . '/seats') }}"
+                 data-check-seats-url="{{ url('/api/matches/' . $match->id . '/check-seats') }}">
                 <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center mb-3 pb-3 border-bottom border-secondary border-opacity-25 gap-2">
                     <h5 class="fw-bold mb-0 text-warning font-display">
                         <i class="fa-solid fa-map-location-dot me-2"></i> SƠ ĐỒ CHỖ NGỒI SÂN VẬN ĐỘNG
