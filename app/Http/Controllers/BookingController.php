@@ -7,6 +7,7 @@ use App\Models\MatchSeat;
 use App\Models\Order;
 use App\Services\BookingService;
 use App\Services\PaymentService;
+use App\Services\TicketService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -16,11 +17,13 @@ class BookingController extends ApiController
 {
     protected BookingService $bookingService;
     protected PaymentService $paymentService;
+    protected TicketService $ticketService;
 
-    public function __construct(BookingService $bookingService, PaymentService $paymentService)
+    public function __construct(BookingService $bookingService, PaymentService $paymentService, TicketService $ticketService)
     {
         $this->bookingService = $bookingService;
         $this->paymentService = $paymentService;
+        $this->ticketService = $ticketService;
     }
 
     /**
@@ -175,6 +178,9 @@ class BookingController extends ApiController
         } else {
             $this->paymentService->simulatePayment((int) $order->id);
         }
+
+        // 3. Tự động gửi email vé điện tử cho người dùng (nếu có lỗi SMTP thì vẫn không làm gián đoạn đặt vé)
+        $this->ticketService->sendTicketEmail((int) $order->id);
 
         return redirect("/booking/success?order_id={$order->id}")
             ->with('success', 'Thanh toán thành công! Vé điện tử của bạn đã sẵn sàng.');
