@@ -41,11 +41,19 @@ document.addEventListener('DOMContentLoaded', function () {
     function renderSeatMap(data) {
         zonesContainer.innerHTML = '';
         const zones = data.zones || [];
+        const allSeats = data.seats || [];
 
         if (zones.length === 0) {
             zonesContainer.innerHTML = `<div class="alert alert-info text-center">Chưa có khu vực khán đài nào được thiết lập.</div>`;
             return;
         }
+
+        // Đảm bảo mỗi zone luôn có mảng ghế tương ứng kể cả khi API trả về mảng phẳng
+        zones.forEach(zone => {
+            if (!zone.seats || !Array.isArray(zone.seats) || zone.seats.length === 0) {
+                zone.seats = allSeats.filter(s => parseInt(s.seat_zone_id, 10) === parseInt(zone.id, 10));
+            }
+        });
 
         zones.forEach(zone => {
             const zoneCard = document.createElement('div');
