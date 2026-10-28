@@ -18,18 +18,7 @@ class TicketConfirmationMail extends Mailable
 
     public function build(): self
     {
-        $rows = $this->order->tickets->map(function ($ticket): string {
-            $match = $ticket->match;
-            $seat = $ticket->matchSeat;
-            $home = e($match?->homeTeam?->name ?? 'TBD');
-            $away = e($match?->awayTeam?->name ?? 'TBD');
-            $seatCode = e($seat?->seat_code ?? '');
-            $code = e($ticket->ticket_code);
-            return "<li><strong>{$home} – {$away}</strong> | Ghế {$seatCode} | Mã vé: {$code}</li>";
-        })->implode('');
-        $orderCode = e((string) $this->order->order_code);
-        $html = "<h1>Vé điện tử World Cup</h1><p>Đơn hàng: {$orderCode}</p><ul>{$rows}</ul>";
-
-        return $this->subject('Vé điện tử của bạn – ' . $this->order->order_code)->html($html);
+        return $this->subject('Vé điện tử FIFA World Cup 2030 – Mã đơn #' . ($this->order->order_code ?? $this->order->id))
+                    ->view('emails.ticket-confirmation');
     }
 }
