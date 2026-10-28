@@ -153,6 +153,101 @@
             </div>
         </div>
     </div>
+
+    <!-- Squad Section (Danh sách cầu thủ 2 đội) -->
+    @if(($match->homeTeam && $match->homeTeam->players->isNotEmpty()) || ($match->awayTeam && $match->awayTeam->players->isNotEmpty()))
+    <div class="row g-4 mt-3">
+        <div class="col-12">
+            <h4 class="font-display fw-bold text-dark mb-0">
+                <i class="fa-solid fa-users text-warning me-2"></i> Danh Sách Cầu Thủ Đăng Ký Thi Đấu
+            </h4>
+            <p class="text-muted small mb-0">Đội hình chính thức và số áo của 2 đội tuyển tham dự trận đấu này.</p>
+        </div>
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden h-100">
+                <div class="card-header bg-white py-3 border-bottom d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center gap-2">
+                        <img src="{{ $match->home_team_flag_url }}" alt="{{ $match->home_team_name }}" style="width: 28px; height: 18px; border-radius: 3px; object-fit: cover;">
+                        <span class="fw-bold text-dark font-display">{{ $match->home_team_name }}</span>
+                    </div>
+                    <span class="badge rounded-pill bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2 py-1">
+                        {{ $match->homeTeam ? $match->homeTeam->players->count() : 0 }} cầu thủ
+                    </span>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                        <table class="table table-hover align-middle mb-0 small">
+                            <thead class="table-light sticky-top">
+                                <tr>
+                                    <th class="ps-3" style="width: 60px;">Số</th>
+                                    <th>Họ và tên</th>
+                                    <th class="text-end pe-3">Vị trí</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($match->homeTeam->players ?? [] as $p)
+                                <tr>
+                                    <td class="ps-3 fw-bold text-primary">#{{ $p->shirt_number ?? '-' }}</td>
+                                    <td class="fw-bold text-dark">{{ $p->name }}</td>
+                                    <td class="text-end pe-3">
+                                        <span class="badge rounded-pill {{ $p->position === 'GK' ? 'bg-warning bg-opacity-15 text-dark border border-warning border-opacity-50' : ($p->position === 'FW' ? 'bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25' : ($p->position === 'MF' ? 'bg-success bg-opacity-10 text-success border border-success border-opacity-25' : 'bg-info bg-opacity-10 text-primary border border-info border-opacity-25')) }} px-2 py-1">
+                                            {{ $p->position_text }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                @empty
+                                <tr><td colspan="3" class="text-center py-3 text-muted">Chưa có danh sách cầu thủ</td></tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden h-100">
+                <div class="card-header bg-white py-3 border-bottom d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center gap-2">
+                        <img src="{{ $match->away_team_flag_url }}" alt="{{ $match->away_team_name }}" style="width: 28px; height: 18px; border-radius: 3px; object-fit: cover;">
+                        <span class="fw-bold text-dark font-display">{{ $match->away_team_name }}</span>
+                    </div>
+                    <span class="badge rounded-pill bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-2 py-1">
+                        {{ $match->awayTeam ? $match->awayTeam->players->count() : 0 }} cầu thủ
+                    </span>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                        <table class="table table-hover align-middle mb-0 small">
+                            <thead class="table-light sticky-top">
+                                <tr>
+                                    <th class="ps-3" style="width: 60px;">Số</th>
+                                    <th>Họ và tên</th>
+                                    <th class="text-end pe-3">Vị trí</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($match->awayTeam->players ?? [] as $p)
+                                <tr>
+                                    <td class="ps-3 fw-bold text-danger">#{{ $p->shirt_number ?? '-' }}</td>
+                                    <td class="fw-bold text-dark">{{ $p->name }}</td>
+                                    <td class="text-end pe-3">
+                                        <span class="badge rounded-pill {{ $p->position === 'GK' ? 'bg-warning bg-opacity-15 text-dark border border-warning border-opacity-50' : ($p->position === 'FW' ? 'bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25' : ($p->position === 'MF' ? 'bg-success bg-opacity-10 text-success border border-success border-opacity-25' : 'bg-info bg-opacity-10 text-primary border border-info border-opacity-25')) }} px-2 py-1">
+                                            {{ $p->position_text }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                @empty
+                                <tr><td colspan="3" class="text-center py-3 text-muted">Chưa có danh sách cầu thủ</td></tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
 </div>
 @endsection
 

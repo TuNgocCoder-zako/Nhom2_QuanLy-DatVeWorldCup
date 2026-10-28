@@ -29,7 +29,7 @@ class Team extends Model
 
         // FIFA 3-letter to ISO 2-letter mapping for high-definition flag assets
         $isoMap = [
-            'ESP' => 'es', 'POR' => 'pt', 'MAR' => 'ma', 'VIE' => 'vn',
+            'ESP' => 'es', 'POR' => 'pt', 'MAR' => 'ma', 'VIE' => 'vn', 'CZE' => 'cz',
             'JPN' => 'jp', 'KOR' => 'kr', 'AUS' => 'au', 'KSA' => 'sa',
             'FRA' => 'fr', 'GER' => 'de', 'ITA' => 'it', 'NED' => 'nl',
             'ENG' => 'gb-eng', 'BEL' => 'be', 'CRO' => 'hr', 'SUI' => 'ch',
@@ -51,6 +51,7 @@ class Team extends Model
 
     public function homeMatches(): HasMany { return $this->hasMany(MatchGame::class, 'home_team_id', 'id'); }
     public function awayMatches(): HasMany { return $this->hasMany(MatchGame::class, 'away_team_id', 'id'); }
+    public function players(): HasMany { return $this->hasMany(Player::class, 'team_id', 'id'); }
     public function scopeInGroup(Builder $query, string $group): Builder { return $query->where('group_name', strtoupper($group)); }
     public function scopeWithCode(Builder $query, string $code): Builder { return $query->where('code', strtoupper($code)); }
 }
