@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 const seatBtn = document.createElement('button');
                 seatBtn.type = 'button';
                 seatBtn.className = `seat ${seat.status.toLowerCase()}`;
-                seatBtn.textContent = seat.seat_code;
+                seatBtn.innerHTML = formatSeatLabel(seat.seat_code);
                 seatBtn.setAttribute('title', `Ghế: ${seat.seat_code} - Giá: ${formatCurrency(seat.price)} VNĐ`);
                 seatBtn.dataset.id = seat.id;
                 seatBtn.dataset.code = seat.seat_code;
@@ -203,5 +203,37 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function formatCurrency(amount) {
         return new Intl.NumberFormat('vi-VN').format(amount);
+    }
+
+    // Hiển thị nhãn ghế 2 dòng gọn gàng, tránh tràn chữ đè lên nhau
+    function formatSeatLabel(code) {
+        if (!code) return '';
+
+        // 1. Định dạng Phổ thông: STD-A-BLK101-01 hoặc STD-A-BLK101-R1-01
+        if (code.startsWith('STD-')) {
+            const parts = code.split('-');
+            const section = parts[1] || 'A';
+            const block = (parts[2] || '').replace('BLK', '');
+            const seatNum = parts.slice(3).join('-');
+            return `<span class="seat-lbl-top">${section}-${block}</span><span class="seat-lbl-bot">#${seatNum}</span>`;
+        }
+
+        // 2. Định dạng VIP: VIP-BLK1-R1-01 hoặc VIP-BLK1-01
+        if (code.startsWith('VIP-')) {
+            const parts = code.split('-');
+            const block = (parts[1] || '1').replace('BLK', '');
+            const seatNum = parts.slice(2).join('-');
+            return `<span class="seat-lbl-top">VIP-${block}</span><span class="seat-lbl-bot">${seatNum}</span>`;
+        }
+
+        // 3. Fallback tổng quát: tách theo dấu gạch nối cuối
+        if (code.includes('-')) {
+            const lastDash = code.lastIndexOf('-');
+            const top = code.substring(0, lastDash);
+            const bot = code.substring(lastDash + 1);
+            return `<span class="seat-lbl-top">${top}</span><span class="seat-lbl-bot">${bot}</span>`;
+        }
+
+        return `<span class="seat-lbl-bot">${code}</span>`;
     }
 });
