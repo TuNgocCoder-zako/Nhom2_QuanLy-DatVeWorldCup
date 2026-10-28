@@ -37,17 +37,6 @@
                             Chưa có tài khoản? <a href="{{ url('/register') }}" class="text-warning fw-bold text-decoration-none">Đăng ký ngay</a>
                         </div>
                     </form>
-
-                    <!-- Demo Credentials Card -->
-                    <div class="mt-4 p-3 rounded-3" style="background: #f8fafc; border: 1px dashed #cbd5e1;">
-                        <div class="fw-bold text-dark small mb-2"><i class="fa-solid fa-key text-warning me-1"></i> Tài khoản Demo có sẵn:</div>
-                        <div class="small text-secondary mb-1">
-                            &bull; <strong>Quản trị viên:</strong> <code class="text-dark bg-white px-2 py-1 rounded">admin@worldcup2030.com</code> | Pass: <code>123456</code>
-                        </div>
-                        <div class="small text-secondary">
-                            &bull; <strong>Khách hàng:</strong> <code class="text-dark bg-white px-2 py-1 rounded">user@gmail.com</code> | Pass: <code>123456</code>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
