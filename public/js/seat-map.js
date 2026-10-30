@@ -14,12 +14,15 @@ document.addEventListener('DOMContentLoaded', function () {
     const btnProceedBooking = document.getElementById('btnProceedBooking');
     const bookingForm = document.getElementById('bookingForm');
     const hiddenSeatIdsContainer = document.getElementById('hiddenSeatIds');
+    const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content') || '';
+    const seatsApiUrl = seatMapContainer.getAttribute('data-seats-url') || `${baseUrl}/api/matches/${matchId}/seats`;
+    const checkSeatsApiUrl = seatMapContainer.getAttribute('data-check-seats-url') || `${baseUrl}/api/matches/${matchId}/check-seats`;
 
     let selectedSeats = [];
     const MAX_SEATS = 8;
 
     // 1. Tải sơ đồ ghế từ API GET /api/matches/{id}/seats
-    fetch(`/api/matches/${matchId}/seats`)
+    fetch(seatsApiUrl)
         .then(response => {
             if (!response.ok) throw new Error('Không thể tải dữ liệu sơ đồ ghế.');
             return response.json();
@@ -41,11 +44,19 @@ document.addEventListener('DOMContentLoaded', function () {
     function renderSeatMap(data) {
         zonesContainer.innerHTML = '';
         const zones = data.zones || [];
+        const allSeats = data.seats || [];
 
         if (zones.length === 0) {
             zonesContainer.innerHTML = `<div class="alert alert-info text-center">Chưa có khu vực khán đài nào được thiết lập.</div>`;
             return;
         }
+
+        // Đảm bảo mỗi zone luôn có mảng ghế tương ứng kể cả khi API trả về mảng phẳng
+        zones.forEach(zone => {
+            if (!zone.seats || !Array.isArray(zone.seats) || zone.seats.length === 0) {
+                zone.seats = allSeats.filter(s => parseInt(s.seat_zone_id, 10) === parseInt(zone.id, 10));
+            }
+        });
 
         zones.forEach(zone => {
             const zoneCard = document.createElement('div');
@@ -76,7 +87,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 const seatBtn = document.createElement('button');
                 seatBtn.type = 'button';
                 seatBtn.className = `seat ${seat.status.toLowerCase()}`;
-                seatBtn.textContent = seat.seat_code;
+                seatBtn.innerHTML = formatSeatLabel(seat.seat_code);
                 seatBtn.setAttribute('title', `Ghế: ${seat.seat_code} - Giá: ${formatCurrency(seat.price)} VNĐ`);
                 seatBtn.dataset.id = seat.id;
                 seatBtn.dataset.code = seat.seat_code;
@@ -165,7 +176,7 @@ document.addEventListener('DOMContentLoaded', function () {
             btnProceedBooking.innerHTML = `<i class="fa-solid fa-spinner fa-spin me-2"></i> Đang kiểm tra ghế...`;
 
             // Gọi API kiểm tra ghế trước thanh toán: POST /api/matches/{id}/check-seats
-            fetch(`/api/matches/${matchId}/check-seats`, {
+            fetch(checkSeatsApiUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -195,5 +206,37 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function formatCurrency(amount) {
         return new Intl.NumberFormat('vi-VN').format(amount);
+    }
+
+    // Hiển thị nhãn ghế 2 dòng gọn gàng, tránh tràn chữ đè lên nhau
+    function formatSeatLabel(code) {
+        if (!code) return '';
+
+        // 1. Định dạng Phổ thông: STD-A-BLK101-01 hoặc STD-A-BLK101-R1-01
+        if (code.startsWith('STD-')) {
+            const parts = code.split('-');
+            const section = parts[1] || 'A';
+            const block = (parts[2] || '').replace('BLK', '');
+            const seatNum = parts.slice(3).join('-');
+            return `<span class="seat-lbl-top">${section}-${block}</span><span class="seat-lbl-bot">#${seatNum}</span>`;
+        }
+
+        // 2. Định dạng VIP: VIP-BLK1-R1-01 hoặc VIP-BLK1-01
+        if (code.startsWith('VIP-')) {
+            const parts = code.split('-');
+            const block = (parts[1] || '1').replace('BLK', '');
+            const seatNum = parts.slice(2).join('-');
+            return `<span class="seat-lbl-top">VIP-${block}</span><span class="seat-lbl-bot">${seatNum}</span>`;
+        }
+
+        // 3. Fallback tổng quát: tách theo dấu gạch nối cuối
+        if (code.includes('-')) {
+            const lastDash = code.lastIndexOf('-');
+            const top = code.substring(0, lastDash);
+            const bot = code.substring(lastDash + 1);
+            return `<span class="seat-lbl-top">${top}</span><span class="seat-lbl-bot">${bot}</span>`;
+        }
+
+        return `<span class="seat-lbl-bot">${code}</span>`;
     }
 });

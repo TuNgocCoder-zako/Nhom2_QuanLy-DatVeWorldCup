@@ -97,24 +97,50 @@
 /* Seat Grid */
 .seat-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(44px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(54px, 1fr));
     gap: 8px;
     justify-content: center;
 }
 
 .seat {
     aspect-ratio: 1;
-    border-radius: 6px;
+    min-height: 48px;
+    border-radius: 8px;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    font-size: 0.75rem;
-    font-weight: 700;
+    padding: 3px 2px;
+    text-align: center;
+    overflow: hidden;
     user-select: none;
     transition: transform 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
     border: 1px solid transparent;
     cursor: pointer;
     font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.seat .seat-lbl-top {
+    font-size: 0.62rem;
+    font-weight: 600;
+    opacity: 0.88;
+    line-height: 1.1;
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.seat .seat-lbl-bot {
+    font-size: 0.72rem;
+    font-weight: 800;
+    line-height: 1.15;
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 /* Seat States */

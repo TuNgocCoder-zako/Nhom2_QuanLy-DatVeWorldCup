@@ -6,7 +6,7 @@
 <!-- ========================================================================
      HERO SECTION (Centenary 1930 - 2030)
      ======================================================================== -->
-<section class="wc-hero text-center">
+<section class="wc-hero text-center" style="background: linear-gradient(180deg, rgba(6, 10, 23, 0.72) 0%, rgba(11, 19, 40, 0.88) 100%), url('{{ asset('images/hero-banner.jpg') }}') center center / cover no-repeat;">
     <div class="container position-relative">
         <!-- Centenary Eyebrow Pill -->
         <div class="d-inline-flex align-items-center mb-3">

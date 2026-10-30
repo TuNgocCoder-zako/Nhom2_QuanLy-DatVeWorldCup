@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="base-url" content="{{ url('/') }}">
     <title>@yield('title', 'FIFA World Cup 2030 - Hệ Thống Đặt Vé Chính Thức')</title>
     <meta name="description" content="Cổng thông tin và đặt vé chính thức giải bóng đá vô địch thế giới FIFA World Cup 2030 tại Tây Ban Nha, Bồ Đào Nha và Ma-rốc. Kỷ niệm 100 năm lịch sử World Cup.">
 

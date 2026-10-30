@@ -24,7 +24,17 @@ class BookingService
             ->find($matchId);
         if (!$match) return $this->result(false, 'Không tìm thấy trận đấu.', null, 404);
 
+        // Tự động sinh ghế nếu trận đấu chưa có ghế nào
+        $existingCount = MatchSeat::query()->where('match_id', $matchId)->count();
+        if ($existingCount === 0) {
+            $this->generateSeatsForMatch($match);
+        }
+
         $zones = SeatZone::query()->where('stadium_id', $match->stadium_id)->get();
+        if ($zones->isEmpty()) {
+            $zones = SeatZone::query()->where('stadium_id', 1)->get();
+        }
+
         $seatQuery = MatchSeat::query()->where('match_id', $matchId)->select(['id', 'match_id', 'seat_zone_id', 'seat_code', 'price', 'status']);
         if (!empty($filters['zone_id'])) $seatQuery->where('seat_zone_id', (int) $filters['zone_id']);
         if (!empty($filters['status'])) $seatQuery->where('status', strtoupper((string) $filters['status']));
@@ -32,10 +42,73 @@ class BookingService
         $seats = $seatQuery->orderBy('seat_zone_id')->orderBy('seat_code')->limit($limit)->get();
         $stats = MatchSeat::query()->where('match_id', $matchId)->select('status', DB::raw('COUNT(*) AS total'))->groupBy('status')->pluck('total', 'status');
 
+        // Gán mảng ghế trực tiếp vào từng khu vực khán đài tương ứng cho frontend
+        $seatsByZone = $seats->groupBy('seat_zone_id');
+        $zones->each(function ($zone) use ($seatsByZone) {
+            $zone->seats = $seatsByZone->get($zone->id, collect())->values();
+        });
+
         return $this->result(true, 'Lấy sơ đồ ghế thành công.', [
             'match' => $match, 'zones' => $zones, 'seats' => $seats,
             'stats' => ['total' => (int) $stats->sum(), 'available' => (int) ($stats['AVAILABLE'] ?? 0), 'held' => (int) ($stats['HELD'] ?? 0), 'booked' => (int) ($stats['BOOKED'] ?? 0)],
         ]);
+    }
+
+    /**
+     * Tự động khởi tạo danh sách ghế cho trận đấu
+     */
+    public function generateSeatsForMatch(MatchGame $match): void
+    {
+        $zones = SeatZone::query()->where('stadium_id', $match->stadium_id)->get();
+        if ($zones->isEmpty()) {
+            $zones = SeatZone::query()->where('stadium_id', 1)->get();
+        }
+
+        $seatInserts = [];
+        foreach ($zones as $zone) {
+            $isVip = strtoupper($zone->type) === 'VIP';
+            $basePrice = $zone->base_price ?: ($isVip ? 8500000 : 2500000);
+
+            if ($isVip) {
+                // 2 blocks x 2 rows x 15 ghế = 60 ghế VIP
+                for ($b = 1; $b <= 2; $b++) {
+                    for ($r = 1; $r <= 2; $r++) {
+                        for ($s = 1; $s <= 15; $s++) {
+                            $seatInserts[] = [
+                                'match_id'     => $match->id,
+                                'seat_zone_id' => $zone->id,
+                                'seat_code'    => sprintf('VIP-BLK%d-R%d-%02d', $b, $r, $s),
+                                'price'        => $basePrice,
+                                'status'       => 'AVAILABLE',
+                                'created_at'   => now(),
+                                'updated_at'   => now(),
+                            ];
+                        }
+                    }
+                }
+            } else {
+                // 2 khán đài A, B x 2 blocks x 25 ghế = 100 ghế Phổ thông
+                foreach (['A', 'B'] as $sec) {
+                    for ($b = 1; $b <= 2; $b++) {
+                        for ($s = 1; $s <= 25; $s++) {
+                            $seatInserts[] = [
+                                'match_id'     => $match->id,
+                                'seat_zone_id' => $zone->id,
+                                'seat_code'    => sprintf('STD-%s-BLK%d-%02d', $sec, 100 + $b, $s),
+                                'price'        => $basePrice,
+                                'status'       => 'AVAILABLE',
+                                'created_at'   => now(),
+                                'updated_at'   => now(),
+                            ];
+                        }
+                    }
+                }
+            }
+        }
+
+        foreach (array_chunk($seatInserts, 100) as $chunk) {
+            MatchSeat::query()->insert($chunk);
+        }
     }
 
     /** @param list<int> $seatIds @return array{success:bool,message:string,data:mixed,code:int} */

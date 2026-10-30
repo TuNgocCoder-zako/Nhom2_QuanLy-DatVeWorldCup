@@ -58,7 +58,7 @@ class MatchController extends Controller
     public function show(int $id): View
     {
         $match = MatchGame::query()
-            ->with(['homeTeam', 'awayTeam', 'stadium.seatZones', 'stadium.city'])
+            ->with(['homeTeam.players', 'awayTeam.players', 'stadium.seatZones', 'stadium.city'])
             ->findOrFail($id);
 
         return view('user.matches.show', compact('match'));
