@@ -202,9 +202,9 @@ CREATE TABLE tickets (
     INDEX idx_ticket_check_in (ticket_code, status, check_in_at)
 ) ENGINE=InnoDB;
 
--- ===========================================
+-- ============================================
 -- 13. BẢNG THANH TOÁN (Tương thích Payment.php & PaymentService)
--- ===========================================
+-- ============================================
 CREATE TABLE payments (
     id INT AUTO_INCREMENT PRIMARY KEY,
     order_id INT NOT NULL,
