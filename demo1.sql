@@ -202,9 +202,9 @@ CREATE TABLE tickets (
     INDEX idx_ticket_check_in (ticket_code, status, check_in_at)
 ) ENGINE=InnoDB;
 
--- ==========================================
+-- ============================================
 -- 13. BẢNG THANH TOÁN (Tương thích Payment.php & PaymentService)
--- ==========================================
+-- ============================================
 CREATE TABLE payments (
     id INT AUTO_INCREMENT PRIMARY KEY,
     order_id INT NOT NULL,
@@ -269,8 +269,10 @@ INSERT INTO stadiums (id, city_id, name, stadium_name, location, capacity) VALUE
 -- 6. KHU VỰC GHẾ (LIÊN KẾT TRỰC TIẾP TICKET_TYPE_ID)
 INSERT INTO seat_zones (stadium_id, ticket_type_id, zone_name, name, type, total_seats, base_price)
 SELECT id, 1, 'Khán đài VIP', 'Khán đài VIP', 'VIP', 10000, 8500000.00 FROM stadiums;
+SELECT id, 1, 'Khán đài VIP', 'Khán đài VIP', 'VIP', 10000, 8500000.00 FROM stadiums;
 
 INSERT INTO seat_zones (stadium_id, ticket_type_id, zone_name, name, type, total_seats, base_price)
+SELECT id, 2, 'Khán đài Phổ Thông', 'Khán đài Phổ Thông', 'STANDARD', 90000, 2500000.00 FROM stadiums;
 SELECT id, 2, 'Khán đài Phổ Thông', 'Khán đài Phổ Thông', 'STANDARD', 90000, 2500000.00 FROM stadiums;
 
 -- 7. 48 ĐỘI TUYỂN 12 BẢNG (A - L)
@@ -471,6 +473,7 @@ INSERT INTO seq_100 (n) VALUES
 
 INSERT IGNORE INTO match_seats (match_id, seat_zone_id, seat_code, price, status)
 SELECT 1, 1, CONCAT('VIP-BLK', b.n, '-R', r.n, '-', LPAD(s.seat_num, 2, '0')), 8500000.00, 'AVAILABLE'
+SELECT 1, 1, CONCAT('VIP-BLK', b.n, '-R', r.n, '-', LPAD(s.seat_num, 2, '0')), 8500000.00, 'AVAILABLE'
 FROM seq_100 b
 JOIN seq_100 r ON r.n <= 5
 JOIN (
@@ -484,6 +487,7 @@ WHERE b.n <= 2;
 
 INSERT IGNORE INTO match_seats (match_id, seat_zone_id, seat_code, price, status)
 SELECT 1, 32, CONCAT('STD-', sec.sec_code, '-BLK', (100 + b.n), '-R', r.n, '-', LPAD(s.seat_num, 2, '0')), 2500000.00, 'AVAILABLE'
+SELECT 1, 32, CONCAT('STD-', sec.sec_code, '-BLK', (100 + b.n), '-R', r.n, '-', LPAD(s.seat_num, 2, '0')), 2500000.00, 'AVAILABLE'
 FROM (SELECT 'A' AS sec_code UNION ALL SELECT 'B' AS sec_code) sec
 JOIN seq_100 b ON b.n <= 2
 JOIN seq_100 r ON r.n <= 4
@@ -496,3 +500,239 @@ JOIN (
 ) s;
 
 DROP TEMPORARY TABLE IF EXISTS seq_100;
+
+
+-- ============================================================================
+-- BỔ SUNG CỘT BẢNG ĐẤU & BẢNG VỊ TRÍ CHỜ (PLACEHOLDERS) CHO VÒNG KNOCK-OUT
+-- ============================================================================
+ALTER TABLE matches 
+ADD COLUMN home_placeholder VARCHAR(50) NULL AFTER away_team_id,
+ADD COLUMN away_placeholder VARCHAR(50) NULL AFTER home_placeholder,
+ADD COLUMN winner_team_id INT NULL AFTER away_score,
+ADD CONSTRAINT fk_matches_winner FOREIGN KEY (winner_team_id) REFERENCES teams(id) ON DELETE SET NULL;
+
+-- ============================================================================
+-- CẤU TRÚC 104 TRẬN ĐẤU CHUẨN FIFA WORLD CUP (VÒNG BẢNG & VÒNG KNOCK-OUT)
+-- ============================================================================
+
+-- A. VÒNG BẢNG (72 TRẬN ĐẤU - 12 BẢNG A TỚI L)
+-- BẢNG A
+INSERT INTO matches (match_number, stage, stadium_id, home_team_id, away_team_id, home_placeholder, away_placeholder, match_time) VALUES
+(1,  'GROUP', 1, 1, 2, 'A1', 'A2', '2030-06-13 20:00:00'),
+(2,  'GROUP', 2, 3, 4, 'A3', 'A4', '2030-06-14 15:00:00'),
+(3,  'GROUP', 1, 1, 3, 'A1', 'A3', '2030-06-18 18:00:00'),
+(4,  'GROUP', 2, 4, 2, 'A4', 'A2', '2030-06-18 21:00:00'),
+(5,  'GROUP', 1, 4, 1, 'A4', 'A1', '2030-06-23 20:00:00'),
+(6,  'GROUP', 2, 2, 3, 'A2', 'A3', '2030-06-23 20:00:00');
+
+-- BẢNG B
+INSERT INTO matches (match_number, stage, stadium_id, home_team_id, away_team_id, home_placeholder, away_placeholder, match_time) VALUES
+(7,  'GROUP', 3, 5, 6, 'B1', 'B2', '2030-06-14 18:00:00'),
+(8,  'GROUP', 4, 7, 8, 'B3', 'B4', '2030-06-14 21:00:00'),
+(9,  'GROUP', 3, 5, 7, 'B1', 'B3', '2030-06-19 18:00:00'),
+(10, 'GROUP', 4, 8, 6, 'B4', 'B2', '2030-06-19 21:00:00'),
+(11, 'GROUP', 3, 8, 5, 'B4', 'B1', '2030-06-24 18:00:00'),
+(12, 'GROUP', 4, 6, 7, 'B2', 'B3', '2030-06-24 18:00:00');
+
+-- BẢNG C
+INSERT INTO matches (match_number, stage, stadium_id, home_team_id, away_team_id, home_placeholder, away_placeholder, match_time) VALUES
+(13, 'GROUP', 10, 9, 10,  'C1', 'C2', '2030-06-15 15:00:00'),
+(14, 'GROUP', 11, 11, 12, 'C3', 'C4', '2030-06-15 18:00:00'),
+(15, 'GROUP', 10, 9, 11,  'C1', 'C3', '2030-06-20 18:00:00'),
+(16, 'GROUP', 11, 12, 10, 'C4', 'C2', '2030-06-20 21:00:00'),
+(17, 'GROUP', 10, 12, 9,  'C4', 'C1', '2030-06-25 21:00:00'),
+(18, 'GROUP', 11, 10, 11, 'C2', 'C3', '2030-06-25 21:00:00');
+
+-- BẢNG D
+INSERT INTO matches (match_number, stage, stadium_id, home_team_id, away_team_id, home_placeholder, away_placeholder, match_time) VALUES
+(19, 'GROUP', 13, 13, 14, 'D1', 'D2', '2030-06-15 21:00:00'),
+(20, 'GROUP', 14, 15, 16, 'D3', 'D4', '2030-06-16 15:00:00'),
+(21, 'GROUP', 13, 13, 15, 'D1', 'D3', '2030-06-21 18:00:00'),
+(22, 'GROUP', 14, 16, 14, 'D4', 'D2', '2030-06-21 21:00:00'),
+(23, 'GROUP', 13, 16, 13, 'D4', 'D1', '2030-06-26 18:00:00'),
+(24, 'GROUP', 14, 14, 15, 'D2', 'D3', '2030-06-26 18:00:00');
+
+-- B. VÒNG KNOCK-OUT
+-- 1. VÒNG 1/16 (ROUND OF 32: TRẬN 73 - 88)
+INSERT INTO matches (match_number, stage, stadium_id, home_placeholder, away_placeholder, match_time) VALUES
+(73, 'ROUND_32', 1,  '1A', '2B',          '2030-06-29 18:00:00'),
+(74, 'ROUND_32', 2,  '1C', '2D',          '2030-06-29 21:00:00'),
+(75, 'ROUND_32', 3,  '1E', '2F',          '2030-06-30 18:00:00'),
+(76, 'ROUND_32', 4,  '1G', '2H',          '2030-06-30 21:00:00'),
+(77, 'ROUND_32', 5,  '1I', '2J',          '2030-07-01 18:00:00'),
+(78, 'ROUND_32', 6,  '1K', '2L',          '2030-07-01 21:00:00'),
+(79, 'ROUND_32', 7,  '1B', '3A/C/D/F',    '2030-07-02 18:00:00'),
+(80, 'ROUND_32', 8,  '1D', '3B/E/F/I',    '2030-07-02 21:00:00'),
+(81, 'ROUND_32', 9,  '1F', '3C/G/H/J',    '2030-07-03 18:00:00'),
+(82, 'ROUND_32', 10, '1H', '3D/I/J/K',    '2030-07-03 21:00:00'),
+(83, 'ROUND_32', 11, '1J', '3E/H/K/L',    '2030-07-04 18:00:00'),
+(84, 'ROUND_32', 12, '1L', '3A/B/G/I',    '2030-07-04 21:00:00'),
+(85, 'ROUND_32', 13, '2A', '2C',          '2030-07-05 18:00:00'),
+(86, 'ROUND_32', 14, '2E', '2G',          '2030-07-05 21:00:00'),
+(87, 'ROUND_32', 15, '2I', '2K',          '2030-07-06 18:00:00'),
+(88, 'ROUND_32', 16, '2H', '2J',          '2030-07-06 21:00:00');
+
+-- 2. VÒNG 1/8 (ROUND OF 16: TRẬN 89 - 96)
+INSERT INTO matches (match_number, stage, stadium_id, home_placeholder, away_placeholder, match_time) VALUES
+(89, 'ROUND_16', 1, 'Thắng 73', 'Thắng 74', '2030-07-08 18:00:00'),
+(90, 'ROUND_16', 2, 'Thắng 75', 'Thắng 76', '2030-07-08 21:00:00'),
+(91, 'ROUND_16', 3, 'Thắng 77', 'Thắng 78', '2030-07-09 18:00:00'),
+(92, 'ROUND_16', 4, 'Thắng 79', 'Thắng 80', '2030-07-09 21:00:00'),
+(93, 'ROUND_16', 5, 'Thắng 81', 'Thắng 82', '2030-07-10 18:00:00'),
+(94, 'ROUND_16', 6, 'Thắng 83', 'Thắng 84', '2030-07-10 21:00:00'),
+(95, 'ROUND_16', 7, 'Thắng 85', 'Thắng 86', '2030-07-11 18:00:00'),
+(96, 'ROUND_16', 8, 'Thắng 87', 'Thắng 88', '2030-07-11 21:00:00');
+
+-- 3. TỨ KẾT (QUARTER FINAL: TRẬN 97 - 100)
+INSERT INTO matches (match_number, stage, stadium_id, home_placeholder, away_placeholder, match_time) VALUES
+(97,  'QUARTER_FINAL', 1,  'Thắng 89', 'Thắng 90', '2030-07-13 18:00:00'),
+(98,  'QUARTER_FINAL', 2,  'Thắng 91', 'Thắng 92', '2030-07-13 21:00:00'),
+(99,  'QUARTER_FINAL', 10, 'Thắng 93', 'Thắng 94', '2030-07-14 18:00:00'),
+(100, 'QUARTER_FINAL', 13, 'Thắng 95', 'Thắng 96', '2030-07-14 21:00:00');
+
+-- 4. BÁN KẾT (SEMI FINAL: TRẬN 101 - 102)
+INSERT INTO matches (match_number, stage, stadium_id, home_placeholder, away_placeholder, match_time) VALUES
+(101, 'SEMI_FINAL', 1,  'Thắng 97', 'Thắng 98',  '2030-07-17 20:00:00'),
+(102, 'SEMI_FINAL', 2,  'Thắng 99', 'Thắng 100', '2030-07-18 20:00:00');
+
+-- 5. TRANH HẠNG 3 (THIRD PLACE: TRẬN 103)
+INSERT INTO matches (match_number, stage, stadium_id, home_placeholder, away_placeholder, match_time) VALUES
+(103, 'THIRD_PLACE', 10, 'Thua 101', 'Thua 102', '2030-07-20 18:00:00');
+
+-- 6. CHUNG KẾT (FINAL: TRẬN 104)
+INSERT INTO matches (match_number, stage, stadium_id, home_placeholder, away_placeholder, match_time) VALUES
+(104, 'FINAL', 1, 'Thắng 101', 'Thắng 102', '2030-07-21 20:00:00');
+
+
+-- ============================================================================
+-- 1. CẬP NHẬT SỨC CHỨA SÂN VẬN ĐỘNG & KHU VỰC GHẾ (300 VIP + 700 THƯỜNG)
+-- ============================================================================
+
+-- Cập nhật sức chứa sân vận động về 1000
+ALTER TABLE stadiums MODIFY COLUMN capacity INT NOT NULL DEFAULT 1000;
+UPDATE stadiums SET capacity = 1000;
+
+-- Xóa dữ liệu phân khu cũ và nạp lại chuẩn 300 VIP + 700 STANDARD
+SET FOREIGN_KEY_CHECKS = 0;
+TRUNCATE TABLE seat_zones;
+SET FOREIGN_KEY_CHECKS = 1;
+
+-- Thêm 300 ghế VIP cho mỗi sân
+INSERT INTO seat_zones (stadium_id, ticket_type_id, zone_name, name, type, total_seats, base_price)
+SELECT id, 1, 'Khán đài VIP', 'Khán đài VIP', 'VIP', 300, 8500000.00 FROM stadiums;
+
+-- Thêm 700 ghế Thường cho mỗi sân
+INSERT INTO seat_zones (stadium_id, ticket_type_id, zone_name, name, type, total_seats, base_price)
+SELECT id, 2, 'Khán đài Phổ Thông', 'Khán đài Phổ Thông', 'STANDARD', 700, 2500000.00 FROM stadiums;
+
+
+-- ============================================================================
+-- 2. STORED PROCEDURE: TỰ ĐỘNG SINH 1,000 GHẾ CHO TRẬN ĐẤU (300 VIP + 700 STD)
+-- ============================================================================
+DELIMITER //
+
+DROP PROCEDURE IF EXISTS sp_generate_match_seats//
+
+CREATE PROCEDURE sp_generate_match_seats(IN p_match_id INT)
+BEGIN
+    DECLARE v_stadium_id INT;
+    DECLARE v_vip_zone_id INT;
+    DECLARE v_std_zone_id INT;
+    DECLARE v_i INT DEFAULT 1;
+
+    -- Lấy stadium_id của trận đấu
+    SELECT stadium_id INTO v_stadium_id FROM matches WHERE id = p_match_id;
+
+    -- Lấy id của khu vực ghế VIP và STANDARD
+    SELECT id INTO v_vip_zone_id FROM seat_zones WHERE stadium_id = v_stadium_id AND type = 'VIP' LIMIT 1;
+    SELECT id INTO v_std_zone_id FROM seat_zones WHERE stadium_id = v_stadium_id AND type = 'STANDARD' LIMIT 1;
+
+    -- Sinh 300 ghế VIP (VIP-001 tới VIP-300)
+    SET v_i = 1;
+    WHILE v_i <= 300 DO
+        INSERT IGNORE INTO match_seats (match_id, seat_zone_id, seat_code, price, status)
+        VALUES (p_match_id, v_vip_zone_id, CONCAT('VIP-', LPAD(v_i, 3, '0')), 8500000.00, 'AVAILABLE');
+        SET v_i = v_i + 1;
+    END WHILE;
+
+    -- Sinh 700 ghế STANDARD (STD-001 tới STD-700)
+    SET v_i = 1;
+    WHILE v_i <= 700 DO
+        INSERT IGNORE INTO match_seats (match_id, seat_zone_id, seat_code, price, status)
+        VALUES (p_match_id, v_std_zone_id, CONCAT('STD-', LPAD(v_i, 3, '0')), 2500000.00, 'AVAILABLE');
+        SET v_i = v_i + 1;
+    END WHILE;
+END//
+
+-- ============================================================================
+-- 3. STORED PROCEDURE: TỰ ĐỘNG ĐẶT 1 GHẾ & SINH VÉ KHI MUA VÉ
+-- ============================================================================
+DROP PROCEDURE IF EXISTS sp_buy_ticket//
+
+CREATE PROCEDURE sp_buy_ticket(
+    IN p_user_id INT,
+    IN p_match_id INT,
+    IN p_ticket_type ENUM('VIP', 'STANDARD'),
+    OUT p_ticket_code VARCHAR(64),
+    OUT p_order_id INT
+)
+BEGIN
+    DECLARE v_seat_id INT DEFAULT NULL;
+    DECLARE v_seat_price DECIMAL(10,2) DEFAULT 0.00;
+    DECLARE v_order_code VARCHAR(64);
+    DECLARE v_generated_ticket_code VARCHAR(64);
+
+    -- 1. Tìm 1 ghế còn trống thuộc loại vé yêu cầu
+    SELECT ms.id, ms.price INTO v_seat_id, v_seat_price
+    FROM match_seats ms
+    JOIN seat_zones sz ON ms.seat_zone_id = sz.id
+    WHERE ms.match_id = p_match_id 
+      AND sz.type = p_ticket_type 
+      AND ms.status = 'AVAILABLE'
+    LIMIT 1
+    FOR UPDATE;
+
+    -- Kiểm tra nếu còn ghế trống
+    IF v_seat_id IS NOT NULL THEN
+        -- Đổi trạng thái ghế sang BOOKED
+        UPDATE match_seats SET status = 'BOOKED' WHERE id = v_seat_id;
+
+        -- Tạo mã đơn hàng & mã vé ngẫu nhiên
+        SET v_order_code = CONCAT('ORD-', UNIX_TIMESTAMP(), '-', FLOOR(RAND() * 8999 + 1000));
+        SET v_generated_ticket_code = CONCAT('TKT-WC2030-', UPPER(SUBSTRING(MD5(RAND()), 1, 10)));
+
+        -- 2. Sinh Đơn hàng (orders)
+        INSERT INTO orders (user_id, order_code, total_price, total_amount, status, payment_status, payment_method)
+        VALUES (p_user_id, v_order_code, v_seat_price, v_seat_price, 'PAID', 'PAID', 'SIMULATION');
+        
+        SET p_order_id = LAST_INSERT_ID();
+
+        -- 3. Tự động sinh Vé (tickets)
+        INSERT INTO tickets (order_id, match_id, match_seat_id, ticket_code, price, status)
+        VALUES (p_order_id, p_match_id, v_seat_id, v_generated_ticket_code, v_seat_price, 'VALID');
+
+        -- 4. Tự động sinh Thanh toán (payments)
+        INSERT INTO payments (order_id, payment_method, transaction_id, amount, status)
+        VALUES (p_order_id, 'SIMULATION', CONCAT('TXN-', UNIX_TIMESTAMP()), v_seat_price, 'SUCCESS');
+
+        SET p_ticket_code = v_generated_ticket_code;
+    ELSE
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Loại vé này cho trận đấu đã hết chỗ!';
+    END IF;
+END//
+
+DELIMITER ;
+
+-- ============================================================================
+-- 4. TRIGGER: TỰ ĐỘNG KHỞI TẠO 1.000 GHẾ BẤT CỨ KHI NÀO TẠO TRẬN ĐẤU MỚI
+-- ============================================================================
+DELIMITER //
+DROP TRIGGER IF EXISTS trg_after_match_insert_generate_seats//
+
+CREATE TRIGGER trg_after_match_insert_generate_seats
+AFTER INSERT ON matches
+FOR EACH ROW
+BEGIN
+    CALL sp_generate_match_seats(NEW.id);
+END//
+DELIMITER ;

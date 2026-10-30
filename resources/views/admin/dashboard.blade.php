@@ -188,7 +188,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let chartInstance = null;
 
     function loadChartData(type) {
-        fetch(`/api/admin/dashboard/chart?type=${type}`)
+        fetch(`{{ url('/api/admin/dashboard/chart') }}?type=${type}`)
             .then(res => res.json())
             .then(data => {
                 const labels = data.labels || [];

@@ -14,12 +14,15 @@ document.addEventListener('DOMContentLoaded', function () {
     const btnProceedBooking = document.getElementById('btnProceedBooking');
     const bookingForm = document.getElementById('bookingForm');
     const hiddenSeatIdsContainer = document.getElementById('hiddenSeatIds');
+    const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content') || '';
+    const seatsApiUrl = seatMapContainer.getAttribute('data-seats-url') || `${baseUrl}/api/matches/${matchId}/seats`;
+    const checkSeatsApiUrl = seatMapContainer.getAttribute('data-check-seats-url') || `${baseUrl}/api/matches/${matchId}/check-seats`;
 
     let selectedSeats = [];
     const MAX_SEATS = 8;
 
     // 1. Tải sơ đồ ghế từ API GET /api/matches/{id}/seats
-    fetch(`/api/matches/${matchId}/seats`)
+    fetch(seatsApiUrl)
         .then(response => {
             if (!response.ok) throw new Error('Không thể tải dữ liệu sơ đồ ghế.');
             return response.json();
@@ -173,7 +176,7 @@ document.addEventListener('DOMContentLoaded', function () {
             btnProceedBooking.innerHTML = `<i class="fa-solid fa-spinner fa-spin me-2"></i> Đang kiểm tra ghế...`;
 
             // Gọi API kiểm tra ghế trước thanh toán: POST /api/matches/{id}/check-seats
-            fetch(`/api/matches/${matchId}/check-seats`, {
+            fetch(checkSeatsApiUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
