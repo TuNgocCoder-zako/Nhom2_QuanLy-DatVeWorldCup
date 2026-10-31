@@ -64,19 +64,17 @@ class StadiumController extends ApiController
             'capacity'     => (int) $request->input('capacity'),
         ]);
 
-        // Tạo sẵn các khu vực khán đài tiêu chuẩn A, B, C, D cho sân mới
+        // Mặc định mỗi sân có 300 ghế VIP và 700 ghế phổ thông.
         $defaultZones = [
-            ['name' => 'Khán đài A (VIP)', 'zone_name' => 'Khán đài A (VIP)', 'type' => 'VIP', 'total_seats' => 50, 'base_price' => 5000000],
-            ['name' => 'Khán đài B (Standard)', 'zone_name' => 'Khán đài B (Standard)', 'type' => 'STANDARD', 'total_seats' => 150, 'base_price' => 2500000],
-            ['name' => 'Khán đài C (Standard)', 'zone_name' => 'Khán đài C (Standard)', 'type' => 'STANDARD', 'total_seats' => 150, 'base_price' => 1800000],
-            ['name' => 'Khán đài D (Standard)', 'zone_name' => 'Khán đài D (Standard)', 'type' => 'STANDARD', 'total_seats' => 150, 'base_price' => 1200000],
+            ['name' => 'Khán đài VIP', 'zone_name' => 'Khán đài VIP', 'type' => 'VIP', 'total_seats' => 300, 'base_price' => 8500000],
+            ['name' => 'Khán đài Phổ Thông', 'zone_name' => 'Khán đài Phổ Thông', 'type' => 'STANDARD', 'total_seats' => 700, 'base_price' => 2500000],
         ];
 
         foreach ($defaultZones as $zone) {
             SeatZone::create(array_merge($zone, ['stadium_id' => $stadium->id]));
         }
 
-        return redirect('/admin/stadiums')->with('success', 'Đã thêm sân vận động và tạo 4 khu vực khán đài mặc định.');
+        return redirect('/admin/stadiums')->with('success', 'Đã thêm sân vận động với 300 ghế VIP và 700 ghế phổ thông.');
     }
 
     /**

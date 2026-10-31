@@ -3,7 +3,7 @@
 @section('title', 'Sơ Đồ Chọn Ghế: ' . ($match->homeTeam->name ?? 'Home') . ' vs ' . ($match->awayTeam->name ?? 'Away') . ' - FIFA World Cup 2030')
 
 @section('styles')
-<link rel="stylesheet" href="{{ asset('css/seat-map.css') }}">
+<link rel="stylesheet" href="{{ asset('css/seat-map.css') }}?v={{ filemtime(public_path('css/seat-map.css')) }}">
 @endsection
 
 @section('content')
@@ -255,5 +255,5 @@
 @endsection
 
 @section('scripts')
-<script src="{{ asset('js/seat-map.js') }}"></script>
+<script src="{{ asset('js/seat-map.js') }}?v={{ filemtime(public_path('js/seat-map.js')) }}"></script>
 @endsection

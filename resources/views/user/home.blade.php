@@ -337,7 +337,7 @@
             <div class="col-lg-3 col-md-6">
                 <div class="wc-prop-card">
                     <div class="wc-prop-icon">
-                        <i class="fa-solid fa-shield-check"></i>
+                        <i class="fa-solid fa-circle-check"></i>
                     </div>
                     <h4 class="fw-bold fs-5 text-dark mb-2">100% Vé Chính Hãng</h4>
                     <p class="text-secondary small mb-0">Hệ thống phân phối vé chính thức có định danh FIFA, cam kết không vé giả hoặc trùng số ghế.</p>
