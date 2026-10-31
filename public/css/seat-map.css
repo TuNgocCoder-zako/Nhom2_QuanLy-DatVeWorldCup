@@ -97,20 +97,26 @@
 /* Seat Grid */
 .seat-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(54px, 1fr));
-    gap: 8px;
-    justify-content: center;
+    grid-template-columns: repeat(12, minmax(72px, 1fr));
+    gap: 12px;
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: auto;
+    padding: 2px 2px 10px;
 }
 
 .seat {
     aspect-ratio: 1;
-    min-height: 48px;
-    border-radius: 8px;
+    min-width: 0;
+    min-height: 0;
+    border-radius: 11px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 3px 2px;
+    gap: 2px;
+    padding: 5px;
+    position: relative;
     text-align: center;
     overflow: hidden;
     user-select: none;
@@ -118,13 +124,13 @@
     border: 1px solid transparent;
     cursor: pointer;
     font-family: 'Plus Jakarta Sans', sans-serif;
+    line-height: 1.2;
 }
 
-.seat .seat-lbl-top {
-    font-size: 0.62rem;
-    font-weight: 600;
-    opacity: 0.88;
-    line-height: 1.1;
+.seat .seat-block {
+    font-size: 11px;
+    font-weight: 500;
+    opacity: 0.85;
     display: block;
     max-width: 100%;
     overflow: hidden;
@@ -132,10 +138,9 @@
     white-space: nowrap;
 }
 
-.seat .seat-lbl-bot {
-    font-size: 0.72rem;
-    font-weight: 800;
-    line-height: 1.15;
+.seat .seat-label {
+    font-size: 15px;
+    font-weight: 700;
     display: block;
     max-width: 100%;
     overflow: hidden;
@@ -145,26 +150,52 @@
 
 /* Seat States */
 .seat.available {
-    background-color: #10b981;
+    background-color: #5cb87f;
     color: #ffffff;
     border-color: rgba(255, 255, 255, 0.15);
 }
 
 .seat.available:hover {
-    background-color: #059669;
-    transform: scale(1.18);
-    box-shadow: 0 0 12px rgba(16, 185, 129, 0.6);
+    background-color: #6bc58d;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(92, 184, 127, 0.35);
     z-index: 5;
 }
 
 .seat.selected {
-    background-color: #f59e0b !important;
-    color: #060a17 !important;
-    font-weight: 800;
-    transform: scale(1.22);
-    box-shadow: 0 0 14px rgba(245, 158, 11, 0.85) !important;
-    border-color: #ffffff !important;
+    background-color: #e8a44a !important;
+    color: #111827 !important;
+    box-shadow: 0 0 12px rgba(255, 190, 70, 0.7) !important;
+    border-color: rgba(255, 255, 255, 0.9) !important;
     z-index: 10;
+}
+
+.seat.selected::before {
+    background:
+        linear-gradient(#fff, #fff) left top / 8px 2px no-repeat,
+        linear-gradient(#fff, #fff) left top / 2px 8px no-repeat,
+        linear-gradient(#fff, #fff) right top / 8px 2px no-repeat,
+        linear-gradient(#fff, #fff) right top / 2px 8px no-repeat,
+        linear-gradient(#fff, #fff) left bottom / 8px 2px no-repeat,
+        linear-gradient(#fff, #fff) left bottom / 2px 8px no-repeat,
+        linear-gradient(#fff, #fff) right bottom / 8px 2px no-repeat,
+        linear-gradient(#fff, #fff) right bottom / 2px 8px no-repeat;
+    content: "";
+    inset: 4px;
+    opacity: 0.8;
+    pointer-events: none;
+    position: absolute;
+}
+
+.seat.selected .seat-block,
+.seat.selected .seat-label {
+    position: relative;
+    z-index: 1;
+}
+
+.seat:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 2px;
 }
 
 .seat.booked, .seat.reserved, .seat.held {
@@ -173,6 +204,24 @@
     cursor: not-allowed;
     opacity: 0.45;
     border-color: rgba(255, 255, 255, 0.04);
+}
+
+@media (max-width: 576px) {
+    .stadium-container {
+        padding: 18px 14px;
+    }
+
+    .zone-card {
+        padding: 14px 12px;
+    }
+
+    .seat .seat-block {
+        font-size: 10px;
+    }
+
+    .seat .seat-label {
+        font-size: 13px;
+    }
 }
 
 /* Legend items */

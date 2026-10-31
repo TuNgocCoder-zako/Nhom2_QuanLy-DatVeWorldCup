@@ -58,6 +58,16 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
+        const vipZones = zones.filter(zone => String(zone.type).toUpperCase() === 'VIP');
+        const standardZones = zones.filter(zone => String(zone.type).toUpperCase() !== 'VIP');
+        const seatOffsets = new Map();
+        let vipSeatOffset = 0;
+
+        vipZones.forEach(zone => {
+            seatOffsets.set(zone.id, vipSeatOffset);
+            vipSeatOffset += (zone.seats || []).length;
+        });
+
         zones.forEach(zone => {
             const zoneCard = document.createElement('div');
             zoneCard.className = 'zone-card';
@@ -65,12 +75,14 @@ document.addEventListener('DOMContentLoaded', function () {
             const zoneName = zone.name || zone.zone_name || 'Khán đài';
             const price = parseFloat(zone.base_price || (zone.seats[0] ? zone.seats[0].price : 0));
             const availableSeatsCount = (zone.seats || []).filter(s => s.status === 'AVAILABLE').length;
+            const escapedZoneName = escapeHtml(zoneName);
+            const escapedZoneType = escapeHtml(zone.type || 'STANDARD');
 
             zoneCard.innerHTML = `
                 <div class="zone-header">
                     <div>
-                        <strong class="text-warning"><i class="fa-solid fa-users-rectangle me-1"></i> ${zoneName}</strong>
-                        <span class="badge ${zone.type === 'VIP' ? 'bg-danger' : 'bg-primary'} ms-2">${zone.type || 'STANDARD'}</span>
+                        <strong class="text-warning"><i class="fa-solid fa-users-rectangle me-1"></i> ${escapedZoneName}</strong>
+                        <span class="badge ${zone.type === 'VIP' ? 'bg-danger' : 'bg-primary'} ms-2">${escapedZoneType}</span>
                     </div>
                     <div class="text-end">
                         <span class="text-white fw-bold me-2">${formatCurrency(price)} VNĐ</span>
@@ -83,16 +95,25 @@ document.addEventListener('DOMContentLoaded', function () {
             zonesContainer.appendChild(zoneCard);
 
             const seatGrid = zoneCard.querySelector(`#zone-seats-${zone.id}`);
-            (zone.seats || []).forEach(seat => {
+            const isVip = String(zone.type).toUpperCase() === 'VIP';
+            const typedZones = isVip ? vipZones : standardZones;
+            const typeZoneIndex = typedZones.findIndex(item => String(item.id) === String(zone.id));
+            const seats = [...(zone.seats || [])].sort((left, right) => Number(left.id) - Number(right.id));
+
+            seats.forEach((seat, index) => {
+                const display = getSeatDisplayInfo(index, isVip, typeZoneIndex, seatOffsets.get(zone.id) || 0);
                 const seatBtn = document.createElement('button');
                 seatBtn.type = 'button';
                 seatBtn.className = `seat ${seat.status.toLowerCase()}`;
-                seatBtn.innerHTML = formatSeatLabel(seat.seat_code);
-                seatBtn.setAttribute('title', `Ghế: ${seat.seat_code} - Giá: ${formatCurrency(seat.price)} VNĐ`);
+                seatBtn.innerHTML = `<span class="seat-block">${escapeHtml(display.block)}</span><span class="seat-label">${escapeHtml(display.label)}</span>`;
                 seatBtn.dataset.id = seat.id;
                 seatBtn.dataset.code = seat.seat_code;
                 seatBtn.dataset.price = seat.price;
                 seatBtn.dataset.zoneName = zoneName;
+                seatBtn.dataset.status = seat.status;
+                seatBtn.dataset.block = display.block;
+                seatBtn.dataset.label = display.label;
+                updateSeatInfo(seatBtn, seat.status);
 
                 if (seat.status === 'AVAILABLE') {
                     seatBtn.addEventListener('click', () => toggleSeatSelection(seatBtn));
@@ -111,6 +132,9 @@ document.addEventListener('DOMContentLoaded', function () {
         const code = seatBtn.dataset.code;
         const price = parseFloat(seatBtn.dataset.price);
         const zoneName = seatBtn.dataset.zoneName;
+        const block = seatBtn.dataset.block;
+        const label = seatBtn.dataset.label;
+        const status = 'Đang chọn';
 
         const index = selectedSeats.findIndex(s => s.id === id);
 
@@ -118,14 +142,16 @@ document.addEventListener('DOMContentLoaded', function () {
             // Bỏ chọn
             selectedSeats.splice(index, 1);
             seatBtn.classList.remove('selected');
+            updateSeatInfo(seatBtn, seatBtn.dataset.status);
         } else {
             // Chọn mới (giới hạn tối đa 8 ghế)
             if (selectedSeats.length >= MAX_SEATS) {
                 alert(`Bạn chỉ được chọn tối đa ${MAX_SEATS} ghế cho một lần đặt vé.`);
                 return;
             }
-            selectedSeats.push({ id, code, price, zoneName });
+            selectedSeats.push({ id, code, price, zoneName, block, label, status });
             seatBtn.classList.add('selected');
+            updateSeatInfo(seatBtn, 'SELECTED');
         }
 
         updateSummary();
@@ -144,7 +170,9 @@ document.addEventListener('DOMContentLoaded', function () {
             } else {
                 selectedSeatsListEl.innerHTML = selectedSeats.map(s => `
                     <span class="badge bg-warning text-dark me-1 mb-1 p-2">
-                        <strong>${s.code}</strong> (${s.zoneName})
+                        <strong>${escapeHtml(s.zoneName)}</strong>
+                        <span class="d-block fw-semibold">${escapeHtml(s.block)} - ${escapeHtml(s.label)}</span>
+                        <span class="d-block fw-normal">${formatCurrency(s.price)} VNĐ · ${escapeHtml(s.status)}</span>
                     </span>
                 `).join('');
             }
@@ -208,35 +236,54 @@ document.addEventListener('DOMContentLoaded', function () {
         return new Intl.NumberFormat('vi-VN').format(amount);
     }
 
-    // Hiển thị nhãn ghế 2 dòng gọn gàng, tránh tràn chữ đè lên nhau
-    function formatSeatLabel(code) {
-        if (!code) return '';
+    function formatSeatStatus(status) {
+        const labels = {
+            AVAILABLE: 'Còn trống',
+            BOOKED: 'Đã đặt',
+            HELD: 'Đang giữ chỗ',
+            RESERVED: 'Đã giữ chỗ',
+            SELECTED: 'Đang chọn'
+        };
 
-        // 1. Định dạng Phổ thông: STD-A-BLK101-01 hoặc STD-A-BLK101-R1-01
-        if (code.startsWith('STD-')) {
-            const parts = code.split('-');
-            const section = parts[1] || 'A';
-            const block = (parts[2] || '').replace('BLK', '');
-            const seatNum = parts.slice(3).join('-');
-            return `<span class="seat-lbl-top">${section}-${block}</span><span class="seat-lbl-bot">#${seatNum}</span>`;
+        return labels[status] || status;
+    }
+
+    function updateSeatInfo(seatBtn, status) {
+        seatBtn.title = `Ghế: ${seatBtn.dataset.block} ${seatBtn.dataset.label} (${seatBtn.dataset.code}) | Khu vực: ${seatBtn.dataset.zoneName} | Giá: ${formatCurrency(seatBtn.dataset.price)} VNĐ | Trạng thái: ${formatSeatStatus(status)}`;
+        seatBtn.setAttribute('aria-label', seatBtn.title);
+    }
+
+    function escapeHtml(value) {
+        return String(value).replace(/[&<>"']/g, character => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        })[character]);
+    }
+
+    function getSeatDisplayInfo(index, isVip, typeZoneIndex, vipSeatOffset) {
+        if (isVip) {
+            const seatIndex = vipSeatOffset + index;
+            const seatInBlock = seatIndex % 30;
+            const row = Math.floor(seatInBlock / 15) + 1;
+            const seatNumber = String((seatInBlock % 15) + 1).padStart(2, '0');
+
+            return {
+                block: `VIP-${Math.floor(seatIndex / 30) + 1}`,
+                label: `R${row}-${seatNumber}`
+            };
         }
 
-        // 2. Định dạng VIP: VIP-BLK1-R1-01 hoặc VIP-BLK1-01
-        if (code.startsWith('VIP-')) {
-            const parts = code.split('-');
-            const block = (parts[1] || '1').replace('BLK', '');
-            const seatNum = parts.slice(2).join('-');
-            return `<span class="seat-lbl-top">VIP-${block}</span><span class="seat-lbl-bot">${seatNum}</span>`;
-        }
+        const section = typeZoneIndex < 26
+            ? String.fromCharCode('A'.charCodeAt(0) + Math.max(0, typeZoneIndex))
+            : `S${typeZoneIndex + 1}`;
+        const seatNumber = String((index % 24) + 1).padStart(2, '0');
 
-        // 3. Fallback tổng quát: tách theo dấu gạch nối cuối
-        if (code.includes('-')) {
-            const lastDash = code.lastIndexOf('-');
-            const top = code.substring(0, lastDash);
-            const bot = code.substring(lastDash + 1);
-            return `<span class="seat-lbl-top">${top}</span><span class="seat-lbl-bot">${bot}</span>`;
-        }
-
-        return `<span class="seat-lbl-bot">${code}</span>`;
+        return {
+            block: `${section}-${101 + Math.floor(index / 24)}`,
+            label: `#${seatNumber}`
+        };
     }
 });
