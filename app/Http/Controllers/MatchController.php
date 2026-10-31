@@ -71,7 +71,7 @@ class MatchController extends Controller
     public function getSeats(Request $request, $id): JsonResponse
     {
         $filters = [
-            'limit' => $request->query('limit', 500),
+            'limit' => $request->query('limit', 5000),
         ];
 
         $result = $this->bookingService->getMatchSeatsMap((int)$id, $filters);

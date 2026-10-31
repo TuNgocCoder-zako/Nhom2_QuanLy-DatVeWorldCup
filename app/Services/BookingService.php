@@ -24,11 +24,7 @@ class BookingService
             ->find($matchId);
         if (!$match) return $this->result(false, 'Không tìm thấy trận đấu.', null, 404);
 
-        // Tự động sinh ghế nếu trận đấu chưa có ghế nào
-        $existingCount = MatchSeat::query()->where('match_id', $matchId)->count();
-        if ($existingCount === 0) {
-            $this->generateSeatsForMatch($match);
-        }
+        $this->generateSeatsForMatch($match);
 
         $zones = SeatZone::query()->where('stadium_id', $match->stadium_id)->get();
         if ($zones->isEmpty()) {
@@ -38,7 +34,7 @@ class BookingService
         $seatQuery = MatchSeat::query()->where('match_id', $matchId)->select(['id', 'match_id', 'seat_zone_id', 'seat_code', 'price', 'status']);
         if (!empty($filters['zone_id'])) $seatQuery->where('seat_zone_id', (int) $filters['zone_id']);
         if (!empty($filters['status'])) $seatQuery->where('status', strtoupper((string) $filters['status']));
-        $limit = max(1, min((int) ($filters['limit'] ?? 500), 5000));
+        $limit = max(1, min((int) ($filters['limit'] ?? 5000), 5000));
         $seats = $seatQuery->orderBy('seat_zone_id')->orderBy('seat_code')->limit($limit)->get();
         $stats = MatchSeat::query()->where('match_id', $matchId)->select('status', DB::raw('COUNT(*) AS total'))->groupBy('status')->pluck('total', 'status');
 
@@ -54,9 +50,7 @@ class BookingService
         ]);
     }
 
-    /**
-     * Tự động khởi tạo danh sách ghế cho trận đấu
-     */
+    /** Ensure every seat configured for each stadium zone exists without changing existing seats. */
     public function generateSeatsForMatch(MatchGame $match): void
     {
         $zones = SeatZone::query()->where('stadium_id', $match->stadium_id)->get();
@@ -64,51 +58,83 @@ class BookingService
             $zones = SeatZone::query()->where('stadium_id', 1)->get();
         }
 
-        $seatInserts = [];
+        $vipZones = $zones->filter(fn (SeatZone $zone): bool => strtoupper($zone->type) === 'VIP')->values();
+        $standardZones = $zones->filter(fn (SeatZone $zone): bool => strtoupper($zone->type) !== 'VIP')->values();
+
         foreach ($zones as $zone) {
             $isVip = strtoupper($zone->type) === 'VIP';
+            $typedZones = $isVip ? $vipZones : $standardZones;
+            $zoneIndex = $typedZones->search(fn (SeatZone $typedZone): bool => $typedZone->id === $zone->id);
+            $targetCount = max(0, (int) $zone->total_seats);
+            $existingCodes = MatchSeat::query()
+                ->where('match_id', $match->id)
+                ->where('seat_zone_id', $zone->id)
+                ->pluck('seat_code')
+                ->all();
+            $existingCodeSet = array_fill_keys($existingCodes, true);
+            $seatInserts = [];
             $basePrice = $zone->base_price ?: ($isVip ? 8500000 : 2500000);
+            $blockOffset = $isVip
+                ? (int) $vipZones->take((int) $zoneIndex)->sum(fn (SeatZone $vipZone): int => (int) ceil((int) $vipZone->total_seats / 50))
+                : 0;
 
-            if ($isVip) {
-                // 2 blocks x 2 rows x 15 ghế = 60 ghế VIP
-                for ($b = 1; $b <= 2; $b++) {
-                    for ($r = 1; $r <= 2; $r++) {
-                        for ($s = 1; $s <= 15; $s++) {
-                            $seatInserts[] = [
-                                'match_id'     => $match->id,
-                                'seat_zone_id' => $zone->id,
-                                'seat_code'    => sprintf('VIP-BLK%d-R%d-%02d', $b, $r, $s),
-                                'price'        => $basePrice,
-                                'status'       => 'AVAILABLE',
-                                'created_at'   => now(),
-                                'updated_at'   => now(),
-                            ];
-                        }
-                    }
+            for ($index = 0; $index < $targetCount && count($existingCodes) + count($seatInserts) < $targetCount; $index++) {
+                $seatCode = $this->seatCode($isVip, $index, (int) $zoneIndex, $typedZones->count(), $targetCount, $blockOffset);
+                if (isset($existingCodeSet[$seatCode])) {
+                    continue;
                 }
-            } else {
-                // 2 khán đài A, B x 2 blocks x 25 ghế = 100 ghế Phổ thông
-                foreach (['A', 'B'] as $sec) {
-                    for ($b = 1; $b <= 2; $b++) {
-                        for ($s = 1; $s <= 25; $s++) {
-                            $seatInserts[] = [
-                                'match_id'     => $match->id,
-                                'seat_zone_id' => $zone->id,
-                                'seat_code'    => sprintf('STD-%s-BLK%d-%02d', $sec, 100 + $b, $s),
-                                'price'        => $basePrice,
-                                'status'       => 'AVAILABLE',
-                                'created_at'   => now(),
-                                'updated_at'   => now(),
-                            ];
-                        }
-                    }
-                }
+
+                $existingCodeSet[$seatCode] = true;
+                $seatInserts[] = [
+                    'match_id' => $match->id,
+                    'seat_zone_id' => $zone->id,
+                    'seat_code' => $seatCode,
+                    'price' => $basePrice,
+                    'status' => 'AVAILABLE',
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            }
+
+            foreach (array_chunk($seatInserts, 100) as $chunk) {
+                MatchSeat::query()->upsert($chunk, ['match_id', 'seat_code'], ['seat_code']);
             }
         }
+    }
 
-        foreach (array_chunk($seatInserts, 100) as $chunk) {
-            MatchSeat::query()->insert($chunk);
+    private function seatCode(
+        bool $isVip,
+        int $index,
+        int $zoneIndex,
+        int $zoneCount,
+        int $targetCount,
+        int $blockOffset
+    ): string
+    {
+        if ($isVip) {
+            $block = intdiv($index, 50) + 1 + $blockOffset;
+            $row = intdiv($index % 50, 25) + 1;
+            $seat = ($index % 25) + 1;
+
+            return sprintf('VIP-BLK%d-R%d-%02d', $block, $row, $seat);
         }
+
+        if ($zoneCount === 1) {
+            $seatsPerSection = (int) ceil($targetCount / 2);
+            $sectionIndex = intdiv($index, $seatsPerSection);
+            $seatIndex = $index % $seatsPerSection;
+        } else {
+            $sectionIndex = $zoneIndex;
+            $seatIndex = $index;
+        }
+
+        $section = $sectionIndex < 26
+            ? chr(ord('A') + $sectionIndex)
+            : 'S' . ($sectionIndex + 1);
+        $block = 101 + intdiv($seatIndex, 25);
+        $seat = ($seatIndex % 25) + 1;
+
+        return sprintf('STD-%s-BLK%d-%02d', $section, $block, $seat);
     }
 
     /** @param list<int> $seatIds @return array{success:bool,message:string,data:mixed,code:int} */

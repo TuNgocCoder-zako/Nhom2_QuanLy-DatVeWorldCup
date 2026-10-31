@@ -4,10 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\ApiController;
 use App\Models\MatchGame;
-use App\Models\MatchSeat;
-use App\Models\SeatZone;
 use App\Models\Stadium;
 use App\Models\Team;
+use App\Services\BookingService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -61,7 +60,7 @@ class MatchController extends ApiController
 
     /**
      * POST /admin/matches
-     * Tạo lịch thi đấu mới và tự động sinh 500 ghế theo các khu khán đài của sân
+     * Tạo lịch thi đấu mới và sinh ghế theo sức chứa từng khu khán đài
      */
     public function store(Request $request): RedirectResponse
     {
@@ -89,36 +88,7 @@ class MatchController extends ApiController
                 'match_status' => 'UPCOMING',
             ]);
 
-            // Lấy các khu vực ghế của sân để sinh ghế
-            $zones = SeatZone::query()->where('stadium_id', $match->stadium_id)->get();
-            if ($zones->isEmpty()) {
-                // Nếu sân chưa có zones, lấy default zones của sân 1
-                $zones = SeatZone::query()->where('stadium_id', 1)->get();
-            }
-
-            $seatInserts = [];
-            foreach ($zones as $zone) {
-                $prefix = strtoupper(substr($zone->name ?: 'A', 0, 1));
-                if (!in_array($prefix, ['A', 'B', 'C', 'D'])) $prefix = 'A';
-                $count = min((int) ($zone->total_seats ?: 100), 150);
-
-                for ($i = 1; $i <= $count; $i++) {
-                    $seatInserts[] = [
-                        'match_id'     => $match->id,
-                        'seat_zone_id' => $zone->id,
-                        'seat_code'    => "{$prefix}{$i}",
-                        'price'        => $zone->base_price ?: 1500000,
-                        'status'       => 'AVAILABLE',
-                        'created_at'   => now(),
-                        'updated_at'   => now(),
-                    ];
-                }
-            }
-
-            // Insert theo chunk để tối ưu hiệu năng
-            foreach (array_chunk($seatInserts, 100) as $chunk) {
-                MatchSeat::insert($chunk);
-            }
+            app(BookingService::class)->generateSeatsForMatch($match);
         });
 
         return redirect('/admin/matches')->with('success', 'Đã tạo trận đấu mới và tự động sinh danh sách ghế thành công.');
