@@ -133,15 +133,17 @@ class TicketController extends ApiController
             return back()->with('error', 'Không tìm thấy vé để xuất PDF.');
         }
 
-        // Tạo chuỗi SVG cho QR code
-        $qrCodeSvg = QrCode::format('svg')
-            ->size(140)
-            ->margin(1)
+        // Tạo chuỗi SVG và Data URI cho QR code (DomPDF cần nhúng qua thẻ <img> để render vector chính xác)
+        $rawSvg = (string) QrCode::format('svg')
+            ->size(130)
+            ->margin(0)
             ->generate($ticket->ticket_code);
+        $qrCodeBase64 = 'data:image/svg+xml;base64,' . base64_encode($rawSvg);
 
         $pdf = Pdf::loadView('tickets.ticket-pdf', [
             'ticket' => $ticket,
-            'qrCodeSvg' => (string) $qrCodeSvg,
+            'qrCodeBase64' => $qrCodeBase64,
+            'qrCodeSvg' => $rawSvg,
         ])->setPaper('a5', 'landscape');
 
         return $pdf->download("ticket_{$ticket->id}.pdf");
