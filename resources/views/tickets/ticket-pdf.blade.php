@@ -87,11 +87,13 @@
         }
         .qr-wrapper {
             margin: 0 auto;
-            display: inline-block;
+            text-align: center;
         }
-        .qr-wrapper svg {
+        .qr-wrapper img {
             width: 130px;
             height: 130px;
+            display: block;
+            margin: 0 auto;
         }
         .ticket-code-label {
             font-size: 10px;
@@ -171,7 +173,11 @@
         <div class="ticket-right">
             <div style="font-weight: bold; font-size: 12px; margin-bottom: 8px; color: #0b132b;">MÃ SOÁT VÉ CỔNG</div>
             <div class="qr-wrapper">
-                {!! $qrCodeSvg !!}
+                @if(!empty($qrCodeBase64))
+                    <img src="{{ $qrCodeBase64 }}" width="130" height="130" alt="Mã QR soát vé" />
+                @elseif(!empty($qrCodeSvg))
+                    <img src="data:image/svg+xml;base64,{{ base64_encode($qrCodeSvg) }}" width="130" height="130" alt="Mã QR soát vé" />
+                @endif
             </div>
             <div class="ticket-code-label">
                 {{ $ticket->ticket_code }}
