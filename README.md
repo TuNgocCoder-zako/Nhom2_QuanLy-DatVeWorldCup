@@ -92,12 +92,3 @@ Nếu chỉ muốn kiểm tra code gửi mail mà không cần cấu hình Gmail
 MAIL_MAILER=log
 ```
 Khi đặt vé thành công, toàn bộ nội dung thư HTML và chi tiết vé sẽ được tự động ghi vào tệp: `storage/logs/laravel.log`.
-
----
-
-## 👤 Tài Khoản Mẫu Trải Nghiệm
-
-Mật khẩu mặc định cho tất cả tài khoản mẫu là: **`123456`**
-
-- **Quản trị viên (Admin)**: `admin@worldcup2030.com` (Trang quản trị: `http://localhost:8000/admin/dashboard`)
-- **Khách hàng (User)**: `user@gmail.com` (Đặt vé, quản lý vé đã mua, xuất vé PDF kèm mã QR)
