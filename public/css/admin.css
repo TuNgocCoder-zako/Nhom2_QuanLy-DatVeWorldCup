@@ -244,3 +244,18 @@ h1, h2, h3, h4, h5, h6, .font-display {
 .btn-action-icon:hover {
     transform: scale(1.1);
 }
+
+/* --------------------------------------------------------------------------
+   Bootstrap Modal Stacking Context & Backdrop Fix
+   -------------------------------------------------------------------------- */
+.modal-backdrop {
+    z-index: 1050 !important;
+}
+
+.modal {
+    z-index: 1060 !important;
+}
+
+.modal-dialog {
+    z-index: 1065 !important;
+}

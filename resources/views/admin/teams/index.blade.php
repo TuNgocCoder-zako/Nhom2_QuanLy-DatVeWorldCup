@@ -80,50 +80,6 @@
                             </form>
                         </td>
                     </tr>
-
-                    <!-- Edit Modal -->
-                    <div class="modal fade" id="editTeamModal{{ $team->id }}" tabindex="-1">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <form action="{{ url('/admin/teams/' . $team->id) }}" method="POST">
-                                    @csrf
-                                    @method('PUT')
-                                    <div class="modal-header">
-                                        <h5 class="modal-title fw-bold">Chỉnh Sửa Đội Tuyển #{{ $team->id }}</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                    </div>
-                                    <div class="modal-body text-start">
-                                        <div class="mb-3">
-                                            <label class="form-label small fw-bold">Tên đội tuyển</label>
-                                            <input type="text" name="name" class="form-control" value="{{ $team->name }}" required>
-                                        </div>
-                                        <div class="row g-2 mb-3">
-                                            <div class="col-6">
-                                                <label class="form-label small fw-bold">Mã FIFA (3 ký tự)</label>
-                                                <input type="text" name="code" class="form-control text-uppercase" maxlength="3" value="{{ $team->code }}" required>
-                                            </div>
-                                            <div class="col-6">
-                                                <label class="form-label small fw-bold">Bảng đấu</label>
-                                                <select name="group_name" class="form-select" required>
-                                                    @foreach($groups as $grp)
-                                                        <option value="{{ $grp }}" {{ $team->group_name === $grp ? 'selected' : '' }}>Bảng {{ $grp }}</option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label class="form-label small fw-bold">URL Quốc kỳ</label>
-                                            <input type="url" name="flag_url" class="form-control" value="{{ $team->flag_url }}">
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Đóng</button>
-                                        <button type="submit" class="btn btn-primary btn-sm">Lưu thay đổi</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
                     @empty
                     <tr>
                         <td colspan="6" class="text-center py-4 text-muted">Không tìm thấy đội tuyển nào.</td>
@@ -181,4 +137,50 @@
         </div>
     </div>
 </div>
+
+<!-- Edit Team Modals -->
+@foreach($teams as $team)
+<div class="modal fade" id="editTeamModal{{ $team->id }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="{{ url('/admin/teams/' . $team->id) }}" method="POST">
+                @csrf
+                @method('PUT')
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold">Chỉnh Sửa Đội Tuyển #{{ $team->id }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-start">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Tên đội tuyển</label>
+                        <input type="text" name="name" class="form-control" value="{{ $team->name }}" required>
+                    </div>
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <label class="form-label small fw-bold">Mã FIFA (3 ký tự)</label>
+                            <input type="text" name="code" class="form-control text-uppercase" maxlength="3" value="{{ $team->code }}" required>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small fw-bold">Bảng đấu</label>
+                            <select name="group_name" class="form-select" required>
+                                @foreach($groups as $grp)
+                                    <option value="{{ $grp }}" {{ $team->group_name === $grp ? 'selected' : '' }}>Bảng {{ $grp }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">URL Quốc kỳ</label>
+                        <input type="url" name="flag_url" class="form-control" value="{{ $team->flag_url }}">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Đóng</button>
+                    <button type="submit" class="btn btn-primary btn-sm">Lưu thay đổi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endforeach
 @endsection

@@ -98,6 +98,17 @@
     <!-- Bootstrap 5 JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
+    <script>
+        // Tự động chuyển toàn bộ modal ra trực tiếp thẻ <body> để tránh bị kẹt stacking context/backdrop tối màn hình
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.modal').forEach(function (modal) {
+                if (modal.parentElement !== document.body) {
+                    document.body.appendChild(modal);
+                }
+            });
+        });
+    </script>
+
     @yield('scripts')
 </body>
 </html>

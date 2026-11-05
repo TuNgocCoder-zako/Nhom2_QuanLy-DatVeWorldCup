@@ -99,51 +99,6 @@
                             </form>
                         </td>
                     </tr>
-
-                    <!-- Edit Modal -->
-                    <div class="modal fade" id="editMatchModal{{ $match->id }}" tabindex="-1">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <form action="{{ url('/admin/matches/' . $match->id) }}" method="POST">
-                                    @csrf
-                                    @method('PUT')
-                                    <div class="modal-header">
-                                        <h5 class="modal-title fw-bold">Cập Nhật Trận Đấu #{{ $match->match_number ?? $match->id }}</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                    </div>
-                                    <div class="modal-body text-start">
-                                        <div class="mb-3">
-                                            <label class="form-label small fw-bold">Thời gian thi đấu</label>
-                                            <input type="datetime-local" name="match_time" class="form-control" value="{{ $match->match_time ? date('Y-m-d\TH:i', strtotime($match->match_time)) : '' }}" required>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label class="form-label small fw-bold">Trạng thái trận đấu</label>
-                                            <select name="status" class="form-select" required>
-                                                <option value="UPCOMING" {{ $match->status === 'UPCOMING' ? 'selected' : '' }}>Sắp diễn ra (UPCOMING)</option>
-                                                <option value="LIVE" {{ $match->status === 'LIVE' ? 'selected' : '' }}>Đang diễn ra (LIVE)</option>
-                                                <option value="FINISHED" {{ $match->status === 'FINISHED' ? 'selected' : '' }}>Đã kết thúc (FINISHED)</option>
-                                                <option value="CANCELLED" {{ $match->status === 'CANCELLED' ? 'selected' : '' }}>Hủy bỏ (CANCELLED)</option>
-                                            </select>
-                                        </div>
-                                        <div class="row g-2 mb-3">
-                                            <div class="col-6">
-                                                <label class="form-label small fw-bold">Bàn thắng {{ $match->home_team_name }}</label>
-                                                <input type="number" name="home_score" class="form-control rounded-3" value="{{ $match->home_score ?? 0 }}" min="0">
-                                            </div>
-                                            <div class="col-6">
-                                                <label class="form-label small fw-bold">Bàn thắng {{ $match->away_team_name }}</label>
-                                                <input type="number" name="away_score" class="form-control rounded-3" value="{{ $match->away_score ?? 0 }}" min="0">
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary btn-sm rounded-pill px-3" data-bs-dismiss="modal">Đóng</button>
-                                        <button type="submit" class="btn btn-primary btn-sm rounded-pill px-3">Cập nhật</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
                     @empty
                     <tr>
                         <td colspan="8" class="text-center py-4 text-muted">Không tìm thấy trận đấu nào.</td>
@@ -231,4 +186,51 @@
         </div>
     </div>
 </div>
+
+<!-- Edit Match Modals -->
+@foreach($matches as $match)
+<div class="modal fade" id="editMatchModal{{ $match->id }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="{{ url('/admin/matches/' . $match->id) }}" method="POST">
+                @csrf
+                @method('PUT')
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold">Cập Nhật Trận Đấu #{{ $match->match_number ?? $match->id }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-start">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Thời gian thi đấu</label>
+                        <input type="datetime-local" name="match_time" class="form-control" value="{{ $match->match_time ? date('Y-m-d\TH:i', strtotime($match->match_time)) : '' }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Trạng thái trận đấu</label>
+                        <select name="status" class="form-select" required>
+                            <option value="UPCOMING" {{ $match->status === 'UPCOMING' ? 'selected' : '' }}>Sắp diễn ra (UPCOMING)</option>
+                            <option value="LIVE" {{ $match->status === 'LIVE' ? 'selected' : '' }}>Đang diễn ra (LIVE)</option>
+                            <option value="FINISHED" {{ $match->status === 'FINISHED' ? 'selected' : '' }}>Đã kết thúc (FINISHED)</option>
+                            <option value="CANCELLED" {{ $match->status === 'CANCELLED' ? 'selected' : '' }}>Hủy bỏ (CANCELLED)</option>
+                        </select>
+                    </div>
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <label class="form-label small fw-bold">Bàn thắng {{ $match->home_team_name }}</label>
+                            <input type="number" name="home_score" class="form-control rounded-3" value="{{ $match->home_score ?? 0 }}" min="0">
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small fw-bold">Bàn thắng {{ $match->away_team_name }}</label>
+                            <input type="number" name="away_score" class="form-control rounded-3" value="{{ $match->away_score ?? 0 }}" min="0">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-sm rounded-pill px-3" data-bs-dismiss="modal">Đóng</button>
+                    <button type="submit" class="btn btn-primary btn-sm rounded-pill px-3">Cập nhật</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endforeach
 @endsection

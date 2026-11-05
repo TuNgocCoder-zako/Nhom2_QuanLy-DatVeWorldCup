@@ -61,40 +61,6 @@
                             </form>
                         </td>
                     </tr>
-
-                    <!-- Edit Modal -->
-                    <div class="modal fade" id="editStadiumModal{{ $stadium->id }}" tabindex="-1">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <form action="{{ url('/admin/stadiums/' . $stadium->id) }}" method="POST">
-                                    @csrf
-                                    @method('PUT')
-                                    <div class="modal-header">
-                                        <h5 class="modal-title fw-bold">Chỉnh Sửa Sân Vận Động #{{ $stadium->id }}</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                    </div>
-                                    <div class="modal-body text-start">
-                                        <div class="mb-3">
-                                            <label class="form-label small fw-bold">Tên sân vận động</label>
-                                            <input type="text" name="name" class="form-control" value="{{ $stadium->stadium_name ?? $stadium->name }}" required>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label class="form-label small fw-bold">Địa điểm / Quốc gia</label>
-                                            <input type="text" name="location" class="form-control" value="{{ $stadium->location }}" required>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label class="form-label small fw-bold">Sức chứa (chỗ ngồi)</label>
-                                            <input type="number" name="capacity" class="form-control" value="{{ $stadium->capacity }}" required min="1000">
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Đóng</button>
-                                        <button type="submit" class="btn btn-primary btn-sm">Lưu thay đổi</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
                     @empty
                     <tr>
                         <td colspan="6" class="text-center py-4 text-muted">Chưa có sân vận động nào.</td>
@@ -145,4 +111,40 @@
         </div>
     </div>
 </div>
+
+<!-- Edit Stadium Modals -->
+@foreach($stadiums as $stadium)
+<div class="modal fade" id="editStadiumModal{{ $stadium->id }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="{{ url('/admin/stadiums/' . $stadium->id) }}" method="POST">
+                @csrf
+                @method('PUT')
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold">Chỉnh Sửa Sân Vận Động #{{ $stadium->id }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-start">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Tên sân vận động</label>
+                        <input type="text" name="name" class="form-control" value="{{ $stadium->stadium_name ?? $stadium->name }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Địa điểm / Quốc gia</label>
+                        <input type="text" name="location" class="form-control" value="{{ $stadium->location }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Sức chứa (chỗ ngồi)</label>
+                        <input type="number" name="capacity" class="form-control" value="{{ $stadium->capacity }}" required min="1000">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Đóng</button>
+                    <button type="submit" class="btn btn-primary btn-sm">Lưu thay đổi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endforeach
 @endsection

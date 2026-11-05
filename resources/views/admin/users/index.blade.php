@@ -69,47 +69,6 @@
                             </button>
                         </td>
                     </tr>
-
-                    <!-- Edit Role Modal -->
-                    <div class="modal fade" id="editUserModal{{ $u->id }}" tabindex="-1">
-                        <div class="modal-dialog">
-                            <div class="modal-content border-0 shadow" style="border-radius: 16px;">
-                                <form action="{{ url('/admin/users/' . $u->id) }}" method="POST">
-                                    @csrf
-                                    @method('PUT')
-                                    <div class="modal-header border-bottom">
-                                        <h5 class="modal-title fw-bold">Phân Quyền Cho Người Dùng #{{ $u->id }}</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                    </div>
-                                    <div class="modal-body text-start">
-                                        <div class="mb-3">
-                                            <label class="form-label small text-muted">Họ và tên</label>
-                                            <input type="text" class="form-control rounded-3" value="{{ $u->name }}" readonly>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label class="form-label small text-muted">Email</label>
-                                            <input type="email" class="form-control rounded-3" value="{{ $u->email }}" readonly>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label class="form-label small fw-bold">Số điện thoại</label>
-                                            <input type="text" name="phone" class="form-control rounded-3" value="{{ $u->phone }}">
-                                        </div>
-                                        <div class="mb-3">
-                                            <label class="form-label small fw-bold">Vai trò hệ thống</label>
-                                            <select name="role" class="form-select rounded-3" required>
-                                                <option value="USER" {{ $u->role === 'USER' ? 'selected' : '' }}>Khách hàng (USER)</option>
-                                                <option value="ADMIN" {{ $u->role === 'ADMIN' ? 'selected' : '' }}>Quản trị viên (ADMIN)</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer border-top">
-                                        <button type="button" class="btn btn-secondary btn-sm rounded-pill px-3" data-bs-dismiss="modal">Đóng</button>
-                                        <button type="submit" class="btn btn-primary btn-sm rounded-pill px-3">Cập nhật vai trò</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
                     @empty
                     <tr>
                         <td colspan="7" class="text-center py-4 text-muted">Không tìm thấy người dùng nào.</td>
@@ -124,4 +83,47 @@
 <div class="mt-3 d-flex justify-content-center">
     {{ $users->links('pagination::bootstrap-5') }}
 </div>
+
+<!-- Edit User Role Modals -->
+@foreach($users as $u)
+<div class="modal fade" id="editUserModal{{ $u->id }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content border-0 shadow" style="border-radius: 16px;">
+            <form action="{{ url('/admin/users/' . $u->id) }}" method="POST">
+                @csrf
+                @method('PUT')
+                <div class="modal-header border-bottom">
+                    <h5 class="modal-title fw-bold">Phân Quyền Cho Người Dùng #{{ $u->id }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-start">
+                    <div class="mb-3">
+                        <label class="form-label small text-muted">Họ và tên</label>
+                        <input type="text" class="form-control rounded-3" value="{{ $u->name }}" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small text-muted">Email</label>
+                        <input type="email" class="form-control rounded-3" value="{{ $u->email }}" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Số điện thoại</label>
+                        <input type="text" name="phone" class="form-control rounded-3" value="{{ $u->phone }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Vai trò hệ thống</label>
+                        <select name="role" class="form-select rounded-3" required>
+                            <option value="USER" {{ $u->role === 'USER' ? 'selected' : '' }}>Khách hàng (USER)</option>
+                            <option value="ADMIN" {{ $u->role === 'ADMIN' ? 'selected' : '' }}>Quản trị viên (ADMIN)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer border-top">
+                    <button type="button" class="btn btn-secondary btn-sm rounded-pill px-3" data-bs-dismiss="modal">Đóng</button>
+                    <button type="submit" class="btn btn-primary btn-sm rounded-pill px-3">Cập nhật vai trò</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endforeach
 @endsection
